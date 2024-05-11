@@ -1,0 +1,30 @@
+﻿namespace GameLibrary
+{
+    public abstract class Character
+    {
+        public String Name { get; set; }
+        public String ImagePath { get; set; }
+        public int HPCurrent { get; set; }
+        public int HPMax { get; set; }
+        public int Strength { get; set; }   //damage given
+        public int Dexterity { get; set; }  //ability to avoid damage
+
+        protected Character()
+        {
+        }
+
+        protected Character(string name, int hPCurrent, int hPMax, int strength, int dexterity)
+        {
+            Name = name;
+            HPCurrent = hPCurrent;
+            HPMax = hPMax;
+            Strength = strength;
+            Dexterity = dexterity;
+        }
+
+        public override string ToString()
+        {
+            return $"Name: {Name}";
+        }
+    }
+}

@@ -1,0 +1,11 @@
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\bin\Debug\net6.0\GameLibrary.deps.json
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\bin\Debug\net6.0\GameLibrary.dll
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\bin\Debug\net6.0\GameLibrary.pdb
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\GameLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\GameLibrary.AssemblyInfoInputs.cache
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\GameLibrary.AssemblyInfo.cs
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\GameLibrary.csproj.CoreCompileInputs.cache
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\GameLibrary.dll
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\refint\GameLibrary.dll
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\GameLibrary.pdb
+C:\Users\barte\Desktop\LabirynthGame\GameLibrary\obj\Debug\net6.0\ref\GameLibrary.dll
