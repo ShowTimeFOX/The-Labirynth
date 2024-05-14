@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\barte\\Desktop\\LabirynthGame\\WinFormsApp1\\TheLabirynth.csproj",
+      "projectUniqueName": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\WinFormsApp1\\TheLabirynth.csproj",
       "projectName": "TheLabirynth",
-      "projectPath": "C:\\Users\\barte\\Desktop\\LabirynthGame\\WinFormsApp1\\TheLabirynth.csproj",
+      "projectPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\WinFormsApp1\\TheLabirynth.csproj",
       "packagesPath": "C:\\Users\\barte\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\barte\\Desktop\\LabirynthGame\\WinFormsApp1\\obj\\",
+      "outputPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\WinFormsApp1\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\barte\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -53,8 +53,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Users\\barte\\Desktop\\LabirynthGame\\GameLibrary\\GameLibrary.csproj": {
-              "projectPath": "C:\\Users\\barte\\Desktop\\LabirynthGame\\GameLibrary\\GameLibrary.csproj"
+            "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\GameLibrary.csproj": {
+              "projectPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\GameLibrary.csproj"
             }
           }
         }

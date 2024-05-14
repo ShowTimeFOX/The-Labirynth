@@ -8,18 +8,18 @@ namespace GameLibrary
 {
     public class Coordinates
     {
-        public int XCoordinete { get; set; }
+        public int XCoordinate { get; set; }
         public int YCoordinate { get; set; }
 
         public Coordinates(int xCoordinete, int yCoordinate)
         {
-            XCoordinete = xCoordinete;
+            XCoordinate = xCoordinete;
             YCoordinate = yCoordinate;
         }
 
         public override string ToString()
         {
-            return $"X: {XCoordinete}; Y: {YCoordinate}";
+            return $"X: {XCoordinate}; Y: {YCoordinate}";
         }
     }
 }

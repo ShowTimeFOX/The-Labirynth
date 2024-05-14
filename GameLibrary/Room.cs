@@ -3,21 +3,17 @@
     public class Room
     {
         public Coordinates Coordinates { get; set; }
-        public Wall WallNorth { get; set; }
-        public Wall WallEast { get; set; }
-        public Wall WallSouth { get; set; }
-        public Wall WallWest { get; set; }
+        public Wall[] Walls { get; set; }
 
         public bool HasMonster { get; set; }
         public Monster Monster { get; set; }
 
-        public Room(Coordinates coordinates, Wall wallNorth, Wall wallEast, Wall wallSouth, Wall wallWest, bool hasMonster = false, Monster monster = null)
+        public Room(Coordinates coordinates, Wall[] walls, bool hasMonster = false, Monster monster = null)
         {
+            if (walls.Length != 4)
+                throw new ArgumentException("There must be exactly 4 walls (North, East, South, West)");
             Coordinates = coordinates;
-            WallNorth = wallNorth;
-            WallEast = wallEast;
-            WallSouth = wallSouth;
-            WallWest = wallWest;
+            Walls = walls;
             HasMonster = hasMonster;
             Monster = monster;
         }

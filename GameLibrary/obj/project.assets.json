@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\barte\\Desktop\\LabirynthGame\\GameLibrary\\GameLibrary.csproj",
+      "projectUniqueName": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\GameLibrary.csproj",
       "projectName": "GameLibrary",
-      "projectPath": "C:\\Users\\barte\\Desktop\\LabirynthGame\\GameLibrary\\GameLibrary.csproj",
+      "projectPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\GameLibrary.csproj",
       "packagesPath": "C:\\Users\\barte\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\barte\\Desktop\\LabirynthGame\\GameLibrary\\obj\\",
+      "outputPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\barte\\AppData\\Roaming\\NuGet\\NuGet.Config",

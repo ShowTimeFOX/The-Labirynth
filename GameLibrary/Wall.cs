@@ -8,13 +8,9 @@
         List<Item> Items = new List<Item>();
         public string ImageDirectory { get; set; }
 
-        public void SetImageDirectory(string directory)
-        {
-            ImageDirectory = directory;
-        }
-
         public Wall(EWallDirection wallDirection, EWallType wallType)
         {
+            ImageDirectory = @"C:\Users\barte\Desktop\ShowTime\Studia\semestr06\PZ\The-Labirynth\img\"; //TODO sciezka wzgledna do projektu
             WallType = wallType;
             Direction = wallDirection;
             // Ustawianie ścieżki do grafiki na podstawie typu ściany i kierunku
