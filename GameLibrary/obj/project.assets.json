@@ -8,19 +8,19 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\barte\\.nuget\\packages\\": {}
+    "C:\\Users\\User\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\GameLibrary.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Desktop\\The-Labirynth-main\\GameLibrary\\GameLibrary.csproj",
       "projectName": "GameLibrary",
-      "projectPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\GameLibrary.csproj",
-      "packagesPath": "C:\\Users\\barte\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\barte\\Desktop\\ShowTime\\Studia\\semestr06\\PZ\\The-Labirynth\\GameLibrary\\obj\\",
+      "projectPath": "C:\\Users\\User\\Desktop\\The-Labirynth-main\\GameLibrary\\GameLibrary.csproj",
+      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\User\\Desktop\\The-Labirynth-main\\GameLibrary\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\barte\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -40,11 +40,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -66,7 +61,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }

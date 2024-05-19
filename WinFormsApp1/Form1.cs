@@ -1,4 +1,5 @@
 using GameLibrary;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using TheLabirynth;
 
@@ -8,10 +9,14 @@ namespace WinFormsApp1
     {
         private Game game;
         private Player player;
+        //S³ownik co przechowuje zdjêcia w RAMie
+        
         public Form1()
         {
             player = new Player();
             game = new Game(player);
+            
+
 
             InitializeComponent();
         }
@@ -72,10 +77,21 @@ namespace WinFormsApp1
 
                 //MessageBox.Show("idziesz do przodu");
             }
-            if (e.KeyCode == Keys.D)
-                MessageBox.Show("obrót w prawo");
-            if (e.KeyCode == Keys.A)
-                MessageBox.Show("obrót w lewo");
+
+
+            if (e.KeyCode == Keys.D) //odwrócenie gracza w prawo
+            {
+                player.Direction = EnumExtensions.Next(player.Direction);
+                Invalidate();
+            }
+            if (e.KeyCode == Keys.A) //odwrócenie gracza w lewo
+            {
+                
+                player.Direction = EnumExtensions.Previous(player.Direction);
+                Invalidate();
+                
+            }
+            
         }
 
         private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -98,27 +114,53 @@ namespace WinFormsApp1
         {
             
             Graphics g = e.Graphics;
+            g.Clear(this.BackColor);
+
             //gdzie jestes?
             int x = player.Coordinates.XCoordinate;
             int y = player.Coordinates.YCoordinate;
             label1.Text = $"X: {x}; Y: {y}";
+
             //w ktor¹ strone patrzysz?
             EDirection direction = player.Direction;
-            //patrz na to gdzie jestes i weŸ potem sciane z lewej i sciane z prawej
-            String front = game.Labirynth[x, y].Walls[(int)direction].ImagePath;
-            String left = game.Labirynth[x, y].Walls[(int)direction.Previous()].ImagePath;
-            String right = game.Labirynth[x, y].Walls[(int)direction.Next()].ImagePath;
-            String floor = game.Labirynth[x, y].Walls[(int)direction.Next()].ImageDirectory + "floor.png";
-            Image f1 = Bitmap.FromFile(front);
-            Image f2 = Bitmap.FromFile(left);
-            Image f3 = Bitmap.FromFile(right);
-            Image f4 = Bitmap.FromFile(floor);
-            
-            //g.drawImage...
-            g.DrawImage(f1, new Rectangle(0,0,Width,Height));
-            g.DrawImage(f2, new Rectangle(0,0,Width,Height));
-            g.DrawImage(f3, new Rectangle(0,0,Width,Height));
-            g.DrawImage(f4, new Rectangle(0,0,Width,Height));
+
+            //GetWall pierwszy argument to pozycja z "oczu gracza" czyli po prostu
+            //wskazanie gdzie to zdjêcie ma siê wyœwietliæ na ekranie
+            //drugie to jak odwrócony jest gracz
+            //trzecie to koordynaty x oraz y pokoju
+            //To jest chyba do zmiany bo to kosmiczne druciarstwo
+            System.Diagnostics.Debug.WriteLine($"------------------------------------");
+            System.Diagnostics.Debug.WriteLine($"Frontowa œciana:");
+            byte[] front = game.GetWall(EDirection.North,direction,x, y); 
+
+            System.Diagnostics.Debug.WriteLine($"Lewa œciana:");
+            byte[] left = game.GetWall(EDirection.West, direction.Previous(), x, y);
+
+            System.Diagnostics.Debug.WriteLine($"Prawa œciana:");
+            byte[] right = game.GetWall(EDirection.East,direction.Next(), x, y);
+
+            byte[] floor = game.GetFloor();
+            //String left = game.Labirynth[x, y].Walls[(int)direction.Previous()].ImagePath;
+            //String right = game.Labirynth[x, y].Walls[(int)direction.Next()].ImagePath;
+            //String floor = game.Labirynth[x, y].Walls[(int)direction.Next()].ImageDirectory + "floor.png";
+
+            System.Diagnostics.Debug.WriteLine($"Pozycja gracza: X:{x},Y:{y} ");
+            System.Diagnostics.Debug.WriteLine($"Direction gracza: {direction}");
+
+
+
+            // Taki zapis z jakiegoœ powodu doda³ cieñ na pod³odze????
+            using (Image f1 = Image.FromStream(new MemoryStream(front)))
+            using (Image f2 = Image.FromStream(new MemoryStream(left)))
+            using (Image f3 = Image.FromStream(new MemoryStream(right)))
+            using (Image f4 = Image.FromStream(new MemoryStream(floor)))
+            {
+                
+                g.DrawImage(f4, new Rectangle(0, 0, Width, Height)); 
+                g.DrawImage(f1, new Rectangle(0, 0, Width, Height)); 
+                g.DrawImage(f2, new Rectangle(0, 0, Width, Height)); 
+                g.DrawImage(f3, new Rectangle(0, 0, Width, Height)); 
+            }
 
 
             //----------------------------------------------------
@@ -130,11 +172,11 @@ namespace WinFormsApp1
 
             // Ustaw rozmiar formularza na podstawie wielkoœci obrazu
             //this.ClientSize = new Size(floor.Width, floor.Height);
-            
+
             // Rysowanie obrazów na formularzu
-            //g.DrawImage(floor, new Rectangle(0, 0, Width, Height));
-            //g.DrawImage(wall_west, new Rectangle(0, 0, Width, Height));
-            //g.DrawImage(wall_east, new Rectangle(0, 0, Width, Height));
+            //g.drawimage(floor, new rectangle(0, 0, width, height));
+            //g.drawimage(wall_west, new rectangle(0, 0, width, height));
+            //g.drawimage(wall_east, new rectangle(0, 0, width, height));
 
 
         }

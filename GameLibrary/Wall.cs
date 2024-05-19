@@ -1,4 +1,6 @@
-﻿namespace GameLibrary
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace GameLibrary
 {
     public class Wall
     {
@@ -10,7 +12,7 @@
 
         public Wall(EWallDirection wallDirection, EWallType wallType)
         {
-            ImageDirectory = @"C:\Users\barte\Desktop\ShowTime\Studia\semestr06\PZ\The-Labirynth\img\"; //TODO sciezka wzgledna do projektu
+            ImageDirectory = Path.Combine("..", "..", "..", "..", "img/"); //TODO sciezka wzgledna do projektu do projektu
             WallType = wallType;
             Direction = wallDirection;
             // Ustawianie ścieżki do grafiki na podstawie typu ściany i kierunku
@@ -26,7 +28,7 @@
                     ImagePath = GetDoorImagePath(wallDirection);
                     break;
                 default:
-                    ImagePath = ""; 
+                    ImagePath = "";
                     break;
             }
         }
