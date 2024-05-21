@@ -157,9 +157,9 @@ namespace WinFormsApp1
             {
                 
                 g.DrawImage(f4, new Rectangle(0, 0, Width, Height)); 
-                g.DrawImage(f1, new Rectangle(0, 0, Width, Height)); 
                 g.DrawImage(f2, new Rectangle(0, 0, Width, Height)); 
                 g.DrawImage(f3, new Rectangle(0, 0, Width, Height)); 
+                g.DrawImage(f1, new Rectangle(0, 0, Width, Height)); 
             }
 
 

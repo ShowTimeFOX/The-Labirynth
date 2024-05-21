@@ -32,3 +32,15 @@ C:\Users\User\Desktop\The-Labirynth-main\GameLibrary\obj\Debug\net6.0\GameLibrar
 C:\Users\User\Desktop\The-Labirynth-main\GameLibrary\obj\Debug\net6.0\refint\GameLibrary.dll
 C:\Users\User\Desktop\The-Labirynth-main\GameLibrary\obj\Debug\net6.0\GameLibrary.pdb
 C:\Users\User\Desktop\The-Labirynth-main\GameLibrary\obj\Debug\net6.0\ref\GameLibrary.dll
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\bin\Debug\net6.0\GameLibrary.deps.json
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\bin\Debug\net6.0\GameLibrary.dll
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\bin\Debug\net6.0\GameLibrary.pdb
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.AssemblyInfoInputs.cache
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.AssemblyInfo.cs
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.csproj.CoreCompileInputs.cache
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.sourcelink.json
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.dll
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\refint\GameLibrary.dll
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\GameLibrary.pdb
+C:\Users\User\Documents\GitHub\The-Labirynth\GameLibrary\obj\Debug\net6.0\ref\GameLibrary.dll
