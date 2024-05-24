@@ -12,7 +12,7 @@ namespace GameLibrary
 
         public Wall(EWallDirection wallDirection, EWallType wallType)
         {
-            ImageDirectory = Path.Combine("..", "..", "..", "..", "img/"); //TODO sciezka wzgledna do projektu do projektu
+            ImageDirectory = Path.Combine("..", "..", "..", "..", "img/");
             WallType = wallType;
             Direction = wallDirection;
             // Ustawianie ścieżki do grafiki na podstawie typu ściany i kierunku

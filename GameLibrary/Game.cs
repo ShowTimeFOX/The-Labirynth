@@ -26,43 +26,24 @@ namespace GameLibrary
          //tutaj na sztywno
         private Player player; // Gracz
         public Game(Player player)
-        {
-            //for (int i = 0; i < labirynth.GetLength(0); i++)
-            //{
-            //    for (int j = 0; j < labirynth.GetLength(1); j++)
-            //    {
-            //        // Tworzenie ścian dla każdego pokoju
-
-            //        Wall[] walls = new Wall[]
-            //        {
-            //            new Wall(EWallDirection.North, EWallType.Door),
-            //            new Wall(EWallDirection.East, EWallType.Door),
-            //            new Wall(EWallDirection.South, EWallType.Door),
-            //            new Wall(EWallDirection.West, EWallType.Door)
-            //        };
-            //        // Inicjalizacja pokoju i dodanie do tablicy
-            //        labirynth[i, j] = new Room(new Coordinates(i, j), walls);
-            //    }
-
-            //}
-            // Inicjalizacja labiryntu 2x2
-            //Room[,] labirynth = new Room[2, 2];
-
-            
+        { 
             //Wczytywanie zdjęć do pamięci RAM
-            imageCache["wall_east_door.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_door.png"));
-            imageCache["wall_east_empty.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_empty.png"));
-            imageCache["wall_east_solid.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_solid.png"));
-            imageCache["wall_north_door.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_door.png"));
-            imageCache["wall_north_empty.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_empty.png"));
-            imageCache["wall_north_solid.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_solid.png"));
-            imageCache["wall_west_door.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_door.png"));
-            imageCache["wall_west_empty.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_empty.png"));
-            imageCache["wall_west_solid.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_solid.png"));
+            // pokój
+            imageCache["wall_east_door"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_door.png"));
+            imageCache["wall_east_empty"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_empty.png"));
+            imageCache["wall_east_solid"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_solid.png"));
+            imageCache["wall_north_door"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_door.png"));
+            imageCache["wall_north_empty"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_empty.png"));
+            imageCache["wall_north_solid"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_solid.png"));
+            imageCache["wall_west_door"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_door.png"));
+            imageCache["wall_west_empty"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_empty.png"));
+            imageCache["wall_west_solid"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_solid.png"));
             imageCache["floor.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "floor.png"));
+            //potwory
 
-            //Metoda co tworzy labirynt z pokoi, przeniosłem do oddzielnej metody
-            //żeby śmietnika nie robić w konstruktorze
+            //itemy
+            
+
             this.CreateLabyrynth();
             player.Coordinates = new Coordinates(0, 0);
             player.Direction = EDirection.North;
@@ -70,7 +51,7 @@ namespace GameLibrary
 
         private void CreateLabyrynth()
         {
-            //inicjalizacja i dodanie do listy 3 pokoi zgodnych z tym naszym rysunkiem z discorda
+            //inicjalizacja i dodanie do listy pokoi zgodnych z tym naszym rysunkiem z discorda
             Wall[] wallsRoomX0Y0 = new Wall[]
             {
                 new Wall(EWallDirection.North,EWallType.Empty),
@@ -87,7 +68,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
+            Monster m1 = new Monster("Asriel", Path.Combine("..", "..", "..", "..", "img/asriel.png"), 100, 100, 60, 30);
+            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m1);
 
             Wall[] wallsRoomX0Y2 = new Wall[]
             {
@@ -399,21 +381,11 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5);
-
-
-
-
-
-
-
-
         }
         public byte[] GetWall(EDirection viewDirection, EDirection playerDirection,int x, int y)
         {
             byte[] ImageToReturn = null;
-            EWallType wallType = labirynth[x,y].Walls[(int)playerDirection].WallType;
-
-            
+            EWallType wallType = labirynth[x,y].Walls[(int)playerDirection].WallType;       
 
             switch (wallType)
             {
@@ -442,20 +414,19 @@ namespace GameLibrary
             switch (direction)
             {
                 case EDirection.North:
-                    wall = "wall_north_solid.png";
+                    wall = "wall_north_solid";
                     break;
                 case EDirection.East:
-                    wall = "wall_east_solid.png";
+                    wall = "wall_east_solid";
                     break;
                 case EDirection.South:
-                    wall = "wall_north_solid.png";
+                    wall = "wall_north_solid";
                     break;
                 case EDirection.West:
-                    wall = "wall_west_solid.png";
+                    wall = "wall_west_solid";
                     break;
             }
             byte[] imageData = imageCache[wall];
-            System.Diagnostics.Debug.WriteLine($"{wall}");
             return imageData;
         }
         //EMPTY
@@ -465,19 +436,18 @@ namespace GameLibrary
             switch (direction)
             {
                 case EDirection.North:
-                    imageName = "wall_north_empty.png";
+                    imageName = "wall_north_empty";
                     break;
                 case EDirection.East:
-                    imageName = "wall_east_empty.png";
+                    imageName = "wall_east_empty";
                     break;
                 case EDirection.South:
-                    imageName = "wall_north_empty.png";
+                    imageName = "wall_north_empty";
                     break;
                 case EDirection.West:
-                    imageName = "wall_west_empty.png";
+                    imageName = "wall_west_empty";
                     break;
             }
-            System.Diagnostics.Debug.WriteLine($"{imageName}");
             return imageCache[imageName];
         }
 
@@ -488,19 +458,18 @@ namespace GameLibrary
             switch (direction)
             {
                 case EDirection.North:
-                    imageName = "wall_north_door.png";
+                    imageName = "wall_north_door";
                     break;
                 case EDirection.East:
-                    imageName = "wall_east_door.png";
+                    imageName = "wall_east_door";
                     break;
                 case EDirection.South:
-                    imageName = "wall_north_door.png";
+                    imageName = "wall_north_door";
                     break;
                 case EDirection.West:
-                    imageName = "wall_west_door.png";
+                    imageName = "wall_west_door";
                     break;
             }
-            System.Diagnostics.Debug.WriteLine($"{imageName}");
             return imageCache[imageName];
         }
     }

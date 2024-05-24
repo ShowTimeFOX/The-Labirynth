@@ -13,9 +13,10 @@
         {
         }
 
-        protected Character(string name, int hPCurrent, int hPMax, int strength, int dexterity)
+        protected Character(string name, string imagePath, int hPCurrent, int hPMax, int strength, int dexterity)
         {
             Name = name;
+            ImagePath = imagePath;
             HPCurrent = hPCurrent;
             HPMax = hPMax;
             Strength = strength;
