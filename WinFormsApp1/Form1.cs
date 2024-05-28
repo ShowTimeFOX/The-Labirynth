@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Media;
+using System.Threading;
 using System.Windows.Forms;
 using TheLabirynth;
 
@@ -16,8 +17,8 @@ namespace WinFormsApp1
         private AudioFileReader backgroundMusicReader;
         private WaveOutEvent stepSoundPlayer;
         private AudioFileReader stepSoundReader;
-        private WaveOutEvent bossFightPlayer;
-        private AudioFileReader bossFightReader;
+        //private WaveOutEvent backgroundMusicPlayer;
+        //private AudioFileReader backgroundMusicReader;
         private Game game;
         private Player player;
         private Image compassPointerImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
@@ -33,6 +34,16 @@ namespace WinFormsApp1
         double angleStep = 0.1; // Krok zmiany k¹ta dla prêdkoœci ruchu
 
         bool enableWalk = true;
+        bool setMonster = false;
+        bool isGameOver = false;
+
+        private int linePosition; // Pozycja pozioma linii
+        private int lineWidth; // Szerokoœæ linii
+        private int lineHeight; // Wysokoœæ linii
+        private bool isSpacePressed; // Flaga okreœlaj¹ca, czy spacja zosta³a naciœniêta
+        private int damage; // Wartoœæ uszkodzenia zadawanego przez gracza
+
+        private bool playerRound = true; //czyja kolej na bicie
 
         public Form1()
         {
@@ -51,52 +62,53 @@ namespace WinFormsApp1
             backgroundMusicReader.Volume = 0.7f; // Przyk³adowo: 20% g³oœnoœci
             backgroundMusicPlayer.Play();
 
-            panel1.Visible = false;
-            panel2.Visible = false;
-            panel1.Location = new Point(0, 0);
-            panel1.Size = new Size(Width, Height);
-            panel1.Controls.Add(pictureBox1);
+            //hitBox
+            linePosition = 0;
+            lineWidth = 10;
+            lineHeight = 100;
+            damage = 0;
+            isSpacePressed = false;
 
-            //panel2.Size = new Size(Width / 2, Height/4);
-            //panel2.Size = new Size(500, 200);
-            //panel2.Location = new Point(0, 0); // Przyklejenie do dolnej krawêdzi panelu1
-            Debug.WriteLine(panel2.Height);
-            panel1.Controls.Add(panel2);
+            panelBackground.Visible = false;
+            panelPlayerControls.Visible = false;
+            panelBackground.Location = new Point(0, 0);
+            panelBackground.Size = new Size(Width, Height);
+            panelBackground.Controls.Add(pictureBoxMonster);
 
-            //buttonFight.Location = new Point(0, 0);
-            //buttonItem.Location = new Point(200, 0);
-            panel2.Controls.Add(buttonFight);
-            panel2.Controls.Add(buttonItem);
+            panelBackground.Controls.Add(panelPlayerControls);
 
+            panelPlayerControls.Controls.Add(buttonFight);
+            panelPlayerControls.Controls.Add(buttonItem);
+            pictureBoxHit.Size = new Size(panelPlayerControls.Width, panelPlayerControls.Height);
 
             //HP BAR przeciwnik
-            hpBarEnemy.Location = new Point(panel1.Width - 300, 100);
+            hpBarEnemy.Location = new Point(panelBackground.Width - 300, 100);
             hpBarEnemy.Size = new Size(200, 30);
             hpBarEnemy.Minimum = 0;
             hpBarEnemy.Maximum = 100; // Maksymalna wartoœæ HP
             hpBarEnemy.Value = 100; // Aktualna wartoœæ HP
-            hpBarEnemy.ForeColor = Color.Red;
-            panel1.Controls.Add(hpBarEnemy);
+            hpBarEnemy.ForeColor = Color.Red; //to to nie dziala
+            panelBackground.Controls.Add(hpBarEnemy);
 
-            labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPCurrent}";
+            hpBarPlayer.Minimum = 0;
+            hpBarPlayer.Maximum = 100;
+            hpBarPlayer.Value = 100;
+
+            labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPMax}";
 
             //pictureBox1.BackColor = Color.Transparent; - gówno psuje animacje
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.Visible = false;
+            pictureBoxMonster.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxMonster.Visible = false;
             centerX = Width / 2 - 165;
             centerY = Height / 2 - 340;
             timerBossMotion.Start();
 
-        }
+            panelOverlay.Visible = false;
+            panelOverlay.Location = new Point(Width / 2 - panelOverlay.Width / 2, Height / 2 - panelOverlay.Height / 2);
 
-        private void button1_MouseCaptureChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
+            panelOverlay.Controls.Add(labelGameOver);
+            panelOverlay.Controls.Add(buttonReplay);
+            panelOverlay.Controls.Add(buttonExit);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -116,10 +128,35 @@ namespace WinFormsApp1
 
             if (!enableWalk)
             {
-                //tutaj bedzie bicie potwora
                 if (e.KeyCode == Keys.Space)
                 {
-                    MessageBox.Show("Naciœniêto spacjê w odpowiednim momencie!", "Gratulacje!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Obliczenie odleg³oœci pozycji kreski od œrodka obrazu
+                    //int distanceFromCenter = Math.Abs(linePosition + lineWidth / 2 - 388 / 2);
+                    int pictureBoxCenterX = pictureBoxHit.Width / 2;
+                    int lineCenterX = linePosition + lineWidth / 2;
+                    int distanceFromCenter = Math.Abs(lineCenterX - pictureBoxCenterX);
+
+                    Debug.WriteLine("Width: " + pictureBoxHit.Width);
+                    Debug.WriteLine("dystans: " + distanceFromCenter);
+
+                    // Maksymalna odleg³oœæ od œrodka PictureBox (maksymalna wartoœæ obra¿eñ)
+                    int maxDistance = pictureBoxHit.Width / 2;
+
+                    // Oblicz znormalizowan¹ odleg³oœæ
+                    double normalizedDistance = (double)distanceFromCenter / maxDistance * 100;
+
+                    // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
+                    damage = Math.Max(100 - (int)normalizedDistance, 0);
+
+
+                    Debug.WriteLine($"DAMAGE: {damage}");
+
+                    damageLabel.Text = $"-{damage}";
+                    damageLabel.Visible = true;
+
+                    // Wyœwietlenie label z wartoœci¹ obra¿eñ
+                    //ShowDamageLabel(damage);
+
                 }
                 return;
             }
@@ -192,7 +229,6 @@ namespace WinFormsApp1
 
         private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-
             e.IsInputKey = true;
         }
 
@@ -208,16 +244,59 @@ namespace WinFormsApp1
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            pictureBox1.Visible = false;
+            int x = player.Coordinates.XCoordinate;
+            int y = player.Coordinates.YCoordinate;
+            pictureBoxMonster.Visible = false;
 
+            //POTWÓR!!!
+            try
+            {
+                if (game.Labirynth[x, y].HasMonster)
+                {
+
+                    hpBarEnemy.Maximum = game.Labirynth[x,y].Monster.HPMax; 
+                    hpBarEnemy.Value = game.Labirynth[x, y].Monster.HPCurrent;
+                    hpBarPlayer.Maximum = player.HPMax;
+                    hpBarPlayer.Value = player.HPCurrent;
+                    // 1. przygotuj pole walki
+                    //zrob ciemno
+                    panelBackground.Visible = true;
+                    panelPlayerControls.Visible = true;
+
+                    //blokuj chodzenie
+                    enableWalk = false;
+                    Monster monster = game.Labirynth[x, y].Monster;
+
+                    Bitmap monsterImage = new Bitmap(monster.ImagePath);
+                    //rysuj w picturebox
+                    pictureBoxMonster.Visible = true;
+                    pictureBoxMonster.Image = monsterImage;
+                    backgroundMusicPlayer.Stop();
+                    backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/bossFight1.mp3"));
+                    backgroundMusicPlayer = new WaveOutEvent();
+                    backgroundMusicPlayer.Init(backgroundMusicReader);
+                    backgroundMusicPlayer.Volume = 0.7f;
+                    backgroundMusicPlayer.Play();
+                    return;
+                }
+            }
+            catch (OutOfMemoryException ex)
+            {
+                Debug.WriteLine(ex.Data);
+            }
+
+            if (isGameOver)
+            {
+                return;
+
+            }
 
             UpdateCompassPointerImage();
             Graphics g = e.Graphics;
             g.Clear(this.BackColor);
 
             //gdzie jestes?
-            int x = player.Coordinates.XCoordinate;
-            int y = player.Coordinates.YCoordinate;
+
             label1.Text = $"X: {x}; Y: {y}";
 
             //w ktor¹ strone patrzysz?
@@ -234,8 +313,6 @@ namespace WinFormsApp1
             //drugie to jak odwrócony jest gracz
             //trzecie to koordynaty x oraz y pokoju
             //To jest chyba do zmiany bo to kosmiczne druciarstwo
-            //System.Diagnostics.Debug.WriteLine($"------------------------------------");
-            //System.Diagnostics.Debug.WriteLine($"Frontowa œciana:");
             byte[] front = game.GetWall(EDirection.North, direction, x, y);
             byte[] left = game.GetWall(EDirection.West, direction.Previous(), x, y);
             byte[] right = game.GetWall(EDirection.East, direction.Next(), x, y);
@@ -253,19 +330,6 @@ namespace WinFormsApp1
                 g.DrawImage(right_img, new Rectangle(0, 0, Width, Height));//G
             }
 
-            //using (Image front_img = Image.FromStream(new MemoryStream(front)))
-            //using (Image left_img = Image.FromStream(new MemoryStream(left)))
-            //using (Image right_img = Image.FromStream(new MemoryStream(right)))
-            //using (Image floor_img = Image.FromStream(new MemoryStream(floor)))
-            //{
-            //    g.DrawImage(left_img, new Rectangle(0, 0, Width-960, Height));//G
-            //    g.DrawImage(right_img, new Rectangle(960, 0, Width-960, Height));//G
-            //    g.DrawImage(front_img, new Rectangle(0, 0, Width, Height));//G
-            //    g.DrawImage(floor_img, new Rectangle(0, Height-360+12, Width, 360));//G
-            //}
-
-
-
             using (Bitmap im = new Bitmap(Path.Combine("..", "..", "..", "..", "img/compass.png")))
             {
                 g.DrawImage(im, new Rectangle(Width - 200, Height - 200, 165, 165));
@@ -273,42 +337,8 @@ namespace WinFormsApp1
 
             }
 
-            //POTWÓR!!!
-            try
-            {
-                if (game.Labirynth[x, y].HasMonster)
-                {
-                    //zrob mu ciemno
-                    //SolidBrush blackBrush = new SolidBrush(Color.Black);
-                    //g.FillRectangle(blackBrush, new Rectangle(0, 0, Width, Height));
-                    panel1.Visible = true;
-                    panel2.Visible = true;
 
-                    //blokuj chodzenie
-                    enableWalk = false;
-
-                    //tuaj nie moze byc za bardzo usinga: https://stackoverflow.com/questions/12680618/exception-parameter-is-not-valid-on-passing-new-image-to-picturebox
-                    //using (Image monster = Image.FromFile(game.Labirynth[x, y].Monster.ImagePath))
-                    Bitmap monster = new Bitmap(game.Labirynth[x, y].Monster.ImagePath);
-                    //rysuj w picturebox
-                    pictureBox1.Visible = true;
-                    pictureBox1.Image = monster;
-                    bossFightReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/bossFight1.mp3"));
-                    bossFightPlayer = new WaveOutEvent();
-                    bossFightPlayer.Init(bossFightReader);
-                    bossFightPlayer.Volume = 0.7f; // Przyk³adowo: 20% g³oœnoœci
-                    backgroundMusicPlayer.Stop();
-                    bossFightPlayer.Play();
-                }
-            }
-            catch (OutOfMemoryException ex)
-            {
-
-                Debug.WriteLine(ex.Data);
-            }
         }
-
-
         // Metoda aktualizuj¹ca obrót obrazu kompasu
         private void UpdateCompassPointerImage()
         {
@@ -333,11 +363,7 @@ namespace WinFormsApp1
             }
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        //poruszanie sie potwora
         private void timer1_Tick(object sender, EventArgs e)
         {
             // Oblicz now¹ pozycjê x i y
@@ -348,26 +374,145 @@ namespace WinFormsApp1
             angle += angleStep;
 
             // Ustaw now¹ pozycjê pictureBox1
-            pictureBox1.Location = new Point(xPosition, yPosition);
+            pictureBoxMonster.Location = new Point(xPosition, yPosition);
         }
 
         private void buttonItem_Click(object sender, EventArgs e)
         {
-
+            //otworzyc ekwipunek
+            //TODO
         }
 
         private void buttonFight_Click(object sender, EventArgs e)
         {
-            pictureBoxHit.Visible = true;
+            //pictureBoxHit.Visible = true;
+            //timerHitBox.Start();
+            int x = player.Coordinates.XCoordinate;
+            int y = player.Coordinates.YCoordinate;
+            Monster monster = game.Labirynth[x, y].Monster;
+            monster.HPCurrent -= player.Strength;
 
-            hpBarEnemy.Value -= player.Strength;
-            Debug.WriteLine(player.Strength);
+            if (monster.HPCurrent <= 0)
+            {
+                game.Labirynth[x,y].Monster = null;
+                game.Labirynth[x,y].HasMonster = false;
+                hpBarEnemy.Value = 0;
+                //pokaz pokoj
+                panelBackground.Visible = false;
+                //zmiana muzyki na background
+                backgroundMusicPlayer.Stop();
+                backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.mp3"));
+                backgroundMusicPlayer = new WaveOutEvent();
+                backgroundMusicPlayer.Init(backgroundMusicReader);
+                backgroundMusicPlayer.Volume = 1f;
+                backgroundMusicPlayer.Play();
+                //wlacz chodzenie
+                enableWalk = true;
+            }
+            else
+            {
+                hpBarEnemy.Value = monster.HPCurrent;
+                Debug.WriteLine(player.Strength);
+                playerRound = false;
+                monsterAttack();
+                //timerHitPoints.Start();
+
+            }
         }
+
 
         private void pictureBoxHit_Paint(object sender, PaintEventArgs e)
         {
             // Rysowanie linii
-            //e.Graphics.FillRectangle(Brushes.Black, linePosition, pictureBox.Height / 2 - lineHeight / 2, lineWidth, lineHeight);
+            e.Graphics.FillRectangle(Brushes.White, linePosition, pictureBoxHit.Height / 2 - lineHeight / 2, lineWidth, lineHeight);
+        }
+
+        private void timerHitBox_Tick(object sender, EventArgs e)
+        {
+            // Poruszanie siê linii z lewej do prawej
+            linePosition += 8;
+            if (linePosition > pictureBoxHit.Width) // jesli wyjdzie za pole pictureBox
+            {
+                timerHitBox.Stop(); // Zatrzymaj timer
+                linePosition = 0; // Zresetuj pozycjê linii
+                pictureBoxHit.Visible = false; // Ukryj PictureBox
+                damage = 0; // Zeruj obra¿enia
+            }
+
+            pictureBoxHit.Invalidate(); // Odœwie¿enie PictureBox
+        }
+
+        private async void monsterAttack()
+        {
+            int x = player.Coordinates.XCoordinate;
+            int y = player.Coordinates.YCoordinate;
+
+            Monster monster = game.Labirynth[x, y].Monster;
+            //potwor bije
+            if (!playerRound)
+            {
+                //czy potwor zyje
+                if (monster.HPCurrent > 0)
+                {
+                    //przygotuj
+
+                    //wylacz przyciski
+                    buttonFight.Enabled = false;
+                    buttonItem.Enabled = false;
+                    buttonItem.BackColor = Color.Gray;
+                    buttonFight.BackColor = Color.Gray;
+                    await Task.Delay(1000);
+                    //animacja bicia
+                    //AnimateFade(Color.Red, Color.Transparent, 1000); // Animacja od czerwonego do przezroczystego w ci¹gu 1 sekundy
+                    //damage
+                    Random rnd = new Random();
+                    int damageToPlayer = rnd.Next(monster.Strength - monster.Strength / 2, monster.Strength + monster.Strength / 2);
+                    player.HPCurrent -= damageToPlayer;
+                    labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPMax}";
+                    if (player.HPCurrent <= 0)
+                    {
+                        panelOverlay.Visible = true;
+                        hpBarPlayer.Value = 0;
+                        backgroundMusicPlayer.Stop();
+                        backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/game_over.mp3"));
+                        backgroundMusicPlayer = new WaveOutEvent();
+                        backgroundMusicPlayer.Init(backgroundMusicReader);
+                        backgroundMusicPlayer.Volume = 0.7f;
+
+                        backgroundMusicPlayer.Play();
+                        return;
+                    }
+                    hpBarPlayer.Value -= damageToPlayer;
+                    Debug.WriteLine($"damage playera: {damageToPlayer}");
+                    await Task.Delay(500);
+                    buttonFight.Enabled = true;
+                    buttonItem.Enabled = true;
+                    buttonItem.BackColor = Color.White;
+                    buttonFight.BackColor = Color.White;
+                    playerRound = true;
+                }
+            }
+        }
+
+        private void panelOverlay_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void buttonReplay_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine("jezcze raaaaaaaaaaaaaz");
+            enableWalk = true;
+            setMonster = false;
+            isGameOver = false;
+            player = new Player("player", null, 100, 100, 30, 20);
+            game = new Game(player);
+            Invalidate();
+        }
+
+        private void buttonExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -68,8 +68,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            Monster m1 = new Monster("Asriel", Path.Combine("..", "..", "..", "..", "img/asriel.png"), 100, 100, 60, 30);
-            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m1);
+            Monster m01 = new Monster("Asriel", Path.Combine("..", "..", "..", "..", "img/asriel.png"), 20, 100, 60, 30);
+            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
 
             Wall[] wallsRoomX0Y2 = new Wall[]
             {
@@ -78,7 +78,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2);
+            Monster m02 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 20, 100, 60, 30);
+            labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2, true, m02);
 
             Wall[] wallsRoomX0Y3 = new Wall[]
             {
@@ -87,7 +88,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3);
+            Monster m03 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
+            labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
 
             Wall[] wallsRoomX0Y4 = new Wall[]
             {

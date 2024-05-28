@@ -33,20 +33,27 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
-            pictureBox1 = new PictureBox();
+            pictureBoxMonster = new PictureBox();
             timerBossMotion = new System.Windows.Forms.Timer(components);
-            panel1 = new Panel();
+            panelBackground = new Panel();
             buttonFight = new Button();
             buttonItem = new Button();
-            panel2 = new Panel();
+            panelPlayerControls = new Panel();
             pictureBoxHit = new PictureBox();
             labelHpPlayer = new Label();
             hpBarPlayer = new ProgressBar();
             hpBarEnemy = new ProgressBar();
             timerHitBox = new System.Windows.Forms.Timer(components);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            panel2.SuspendLayout();
+            damageLabel = new Label();
+            timerHitPoints = new System.Windows.Forms.Timer(components);
+            panelOverlay = new Panel();
+            buttonExit = new Button();
+            buttonReplay = new Button();
+            labelGameOver = new Label();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxMonster).BeginInit();
+            panelPlayerControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxHit).BeginInit();
+            panelOverlay.SuspendLayout();
             SuspendLayout();
             // 
             // label1
@@ -59,7 +66,6 @@
             label1.Size = new Size(56, 22);
             label1.TabIndex = 0;
             label1.Text = "label1";
-            label1.Click += label1_Click;
             // 
             // label2
             // 
@@ -83,31 +89,31 @@
             label3.TabIndex = 2;
             label3.Text = "N";
             // 
-            // pictureBox1
+            // pictureBoxMonster
             // 
-            pictureBox1.BackColor = Color.Black;
-            pictureBox1.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBox1.ErrorImage = null;
-            pictureBox1.Location = new Point(202, 46);
-            pictureBox1.Margin = new Padding(3, 2, 3, 2);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(330, 340);
-            pictureBox1.TabIndex = 3;
-            pictureBox1.TabStop = false;
+            pictureBoxMonster.BackColor = Color.Black;
+            pictureBoxMonster.BackgroundImageLayout = ImageLayout.Center;
+            pictureBoxMonster.ErrorImage = null;
+            pictureBoxMonster.Location = new Point(202, 46);
+            pictureBoxMonster.Margin = new Padding(3, 2, 3, 2);
+            pictureBoxMonster.Name = "pictureBoxMonster";
+            pictureBoxMonster.Size = new Size(330, 340);
+            pictureBoxMonster.TabIndex = 3;
+            pictureBoxMonster.TabStop = false;
             // 
             // timerBossMotion
             // 
             timerBossMotion.Interval = 50;
             timerBossMotion.Tick += timer1_Tick;
             // 
-            // panel1
+            // panelBackground
             // 
-            panel1.BackColor = Color.Black;
-            panel1.Location = new Point(0, 0);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(200, 100);
-            panel1.TabIndex = 5;
-            panel1.Visible = false;
+            panelBackground.BackColor = Color.Black;
+            panelBackground.Location = new Point(0, 0);
+            panelBackground.Name = "panelBackground";
+            panelBackground.Size = new Size(200, 100);
+            panelBackground.TabIndex = 5;
+            panelBackground.Visible = false;
             // 
             // buttonFight
             // 
@@ -131,27 +137,26 @@
             buttonItem.UseVisualStyleBackColor = true;
             buttonItem.Click += buttonItem_Click;
             // 
-            // panel2
+            // panelPlayerControls
             // 
-            panel2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            panel2.BackColor = SystemColors.WindowFrame;
-            panel2.Controls.Add(pictureBoxHit);
-            panel2.Controls.Add(labelHpPlayer);
-            panel2.Controls.Add(hpBarPlayer);
-            panel2.Controls.Add(buttonFight);
-            panel2.Controls.Add(buttonItem);
-            panel2.Location = new Point(576, 652);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(388, 181);
-            panel2.TabIndex = 8;
-            panel2.Visible = false;
+            panelPlayerControls.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panelPlayerControls.BackColor = SystemColors.WindowFrame;
+            panelPlayerControls.Controls.Add(pictureBoxHit);
+            panelPlayerControls.Controls.Add(labelHpPlayer);
+            panelPlayerControls.Controls.Add(hpBarPlayer);
+            panelPlayerControls.Controls.Add(buttonFight);
+            panelPlayerControls.Controls.Add(buttonItem);
+            panelPlayerControls.Location = new Point(576, 652);
+            panelPlayerControls.Name = "panelPlayerControls";
+            panelPlayerControls.Size = new Size(388, 181);
+            panelPlayerControls.TabIndex = 8;
+            panelPlayerControls.Visible = false;
             // 
             // pictureBoxHit
             // 
             pictureBoxHit.BackColor = SystemColors.ActiveCaption;
             pictureBoxHit.BackgroundImage = (Image)resources.GetObject("pictureBoxHit.BackgroundImage");
             pictureBoxHit.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBoxHit.Enabled = false;
             pictureBoxHit.Location = new Point(0, 47);
             pictureBoxHit.Name = "pictureBoxHit";
             pictureBoxHit.Size = new Size(388, 134);
@@ -195,6 +200,68 @@
             // timerHitBox
             // 
             timerHitBox.Interval = 5;
+            timerHitBox.Tick += timerHitBox_Tick;
+            // 
+            // damageLabel
+            // 
+            damageLabel.AutoSize = true;
+            damageLabel.Font = new Font("Tahoma", 22.2F, FontStyle.Bold, GraphicsUnit.Point);
+            damageLabel.ForeColor = Color.Red;
+            damageLabel.Location = new Point(777, 108);
+            damageLabel.Name = "damageLabel";
+            damageLabel.Size = new Size(53, 36);
+            damageLabel.TabIndex = 10;
+            damageLabel.Text = "50";
+            // 
+            // timerHitPoints
+            // 
+            timerHitPoints.Interval = 10;
+            // 
+            // panelOverlay
+            // 
+            panelOverlay.BackColor = Color.FromArgb(64, 64, 64);
+            panelOverlay.Controls.Add(buttonExit);
+            panelOverlay.Controls.Add(buttonReplay);
+            panelOverlay.Controls.Add(labelGameOver);
+            panelOverlay.Location = new Point(614, 166);
+            panelOverlay.Name = "panelOverlay";
+            panelOverlay.Size = new Size(300, 200);
+            panelOverlay.TabIndex = 11;
+            panelOverlay.Visible = false;
+            panelOverlay.Paint += panelOverlay_Paint;
+            // 
+            // buttonExit
+            // 
+            buttonExit.Font = new Font("SimSun", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonExit.Location = new Point(104, 134);
+            buttonExit.Name = "buttonExit";
+            buttonExit.Size = new Size(112, 43);
+            buttonExit.TabIndex = 2;
+            buttonExit.Text = "Exit";
+            buttonExit.UseVisualStyleBackColor = true;
+            buttonExit.Click += buttonExit_Click;
+            // 
+            // buttonReplay
+            // 
+            buttonReplay.Font = new Font("SimSun", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            buttonReplay.Location = new Point(104, 72);
+            buttonReplay.Name = "buttonReplay";
+            buttonReplay.Size = new Size(112, 44);
+            buttonReplay.TabIndex = 1;
+            buttonReplay.Text = "Replay";
+            buttonReplay.UseVisualStyleBackColor = true;
+            buttonReplay.Click += buttonReplay_Click;
+            // 
+            // labelGameOver
+            // 
+            labelGameOver.AutoSize = true;
+            labelGameOver.Font = new Font("SimSun", 22.2F, FontStyle.Bold, GraphicsUnit.Point);
+            labelGameOver.ForeColor = SystemColors.ButtonHighlight;
+            labelGameOver.Location = new Point(78, 29);
+            labelGameOver.Name = "labelGameOver";
+            labelGameOver.Size = new Size(157, 30);
+            labelGameOver.TabIndex = 0;
+            labelGameOver.Text = "GAME OVER";
             // 
             // Form1
             // 
@@ -202,10 +269,12 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlText;
             ClientSize = new Size(1540, 845);
+            Controls.Add(panelOverlay);
+            Controls.Add(damageLabel);
             Controls.Add(hpBarEnemy);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
-            Controls.Add(pictureBox1);
+            Controls.Add(panelPlayerControls);
+            Controls.Add(panelBackground);
+            Controls.Add(pictureBoxMonster);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -219,12 +288,13 @@
             Load += Form1_Load;
             Paint += Form1_Paint;
             KeyDown += Form1_KeyDown;
-            KeyPress += Form1_KeyPress;
             PreviewKeyDown += Form1_PreviewKeyDown;
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxMonster).EndInit();
+            panelPlayerControls.ResumeLayout(false);
+            panelPlayerControls.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxHit).EndInit();
+            panelOverlay.ResumeLayout(false);
+            panelOverlay.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -234,16 +304,22 @@
         private Label label1;
         private Label label2;
         private Label label3;
-        private PictureBox pictureBox1;
-        private System.Windows.Forms.Timer timerBossMotion;
-        private Panel panel1;
+        private PictureBox pictureBoxMonster;
+        private Panel panelBackground;
         private Button buttonFight;
         private Button buttonItem;
-        private Panel panel2;
+        private Panel panelPlayerControls;
         private ProgressBar hpBarEnemy;
         private ProgressBar hpBarPlayer;
         private Label labelHpPlayer;
         private PictureBox pictureBoxHit;
         private System.Windows.Forms.Timer timerHitBox;
+        private Label damageLabel;
+        private System.Windows.Forms.Timer timerHitPoints;
+        private System.Windows.Forms.Timer timerBossMotion;
+        private Panel panelOverlay;
+        private Label labelGameOver;
+        private Button buttonExit;
+        private Button buttonReplay;
     }
 }
