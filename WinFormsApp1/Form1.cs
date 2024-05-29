@@ -1,4 +1,5 @@
 using GameLibrary;
+using NAudio.Dmo;
 using NAudio.Wave;
 using System.Diagnostics;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Media;
 using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 using TheLabirynth;
 
@@ -21,6 +23,7 @@ namespace WinFormsApp1
         //private AudioFileReader backgroundMusicReader;
         private Game game;
         private Player player;
+        private Monster monster;
         private Image compassPointerImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
         private Image originalCompassImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
 
@@ -40,10 +43,14 @@ namespace WinFormsApp1
         private int linePosition; // Pozycja pozioma linii
         private int lineWidth; // Szerokoœæ linii
         private int lineHeight; // Wysokoœæ linii
-        private bool isSpacePressed; // Flaga okreœlaj¹ca, czy spacja zosta³a naciœniêta
+        private int lineSpeed = 8; // szybkosc linii
+        private bool enableSpace; // Flaga okreœlaj¹ca, czy spacja zosta³a naciœniêta
         private int damage; // Wartoœæ uszkodzenia zadawanego przez gracza
 
         private bool playerRound = true; //czyja kolej na bicie
+
+        static int animationStep = 0;
+        static AutoResetEvent animationFinished = new AutoResetEvent(false);
 
         public Form1()
         {
@@ -65,9 +72,9 @@ namespace WinFormsApp1
             //hitBox
             linePosition = 0;
             lineWidth = 10;
-            lineHeight = 100;
+            lineHeight = pictureBoxHit.Height;
             damage = 0;
-            isSpacePressed = false;
+            enableSpace = false;
 
             panelBackground.Visible = false;
             panelPlayerControls.Visible = false;
@@ -79,16 +86,20 @@ namespace WinFormsApp1
 
             panelPlayerControls.Controls.Add(buttonFight);
             panelPlayerControls.Controls.Add(buttonItem);
-            pictureBoxHit.Size = new Size(panelPlayerControls.Width, panelPlayerControls.Height);
+            //pictureBoxHit.Size = new Size(panelPlayerControls.Width, panelPlayerControls.Height);
 
             //HP BAR przeciwnik
-            hpBarEnemy.Location = new Point(panelBackground.Width - 300, 100);
-            hpBarEnemy.Size = new Size(200, 30);
-            hpBarEnemy.Minimum = 0;
-            hpBarEnemy.Maximum = 100; // Maksymalna wartoœæ HP
-            hpBarEnemy.Value = 100; // Aktualna wartoœæ HP
-            hpBarEnemy.ForeColor = Color.Red; //to to nie dziala
-            panelBackground.Controls.Add(hpBarEnemy);
+            //hpBarMonster.Location = new Point(panelBackground.Width - 300, 100);
+            //hpBarMonster.Size = new Size(200, 30);
+            hpBarMonster.Minimum = 0;
+            hpBarMonster.Maximum = 100; // Maksymalna wartoœæ HP
+            hpBarMonster.Value = 100; // Aktualna wartoœæ HP
+            hpBarMonster.ForeColor = Color.Red; //to to nie dziala
+            panelBackground.Controls.Add(hpBarMonster);
+            panelBackground.Controls.Add(labelHpMonster);
+
+            labelDamage.Location = new Point(Width / 2, 115);
+            panelBackground.Controls.Add(labelDamage);
 
             hpBarPlayer.Minimum = 0;
             hpBarPlayer.Maximum = 100;
@@ -103,6 +114,11 @@ namespace WinFormsApp1
             centerY = Height / 2 - 340;
             timerBossMotion.Start();
 
+            panelBackground.Controls.Add(labelDamagePlayer);
+
+            panelBackground.Controls.Add(panelOverlay);
+            panelOverlay.BringToFront();
+
             panelOverlay.Visible = false;
             panelOverlay.Location = new Point(Width / 2 - panelOverlay.Width / 2, Height / 2 - panelOverlay.Height / 2);
 
@@ -113,6 +129,9 @@ namespace WinFormsApp1
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            int x = player.Coordinates.XCoordinate;
+            int y = player.Coordinates.YCoordinate;
+
             if (e.KeyCode == Keys.Escape)
             {
                 // Wyœwietlenie komunikatu potwierdzaj¹cego wyjœcie
@@ -126,7 +145,7 @@ namespace WinFormsApp1
                 this.Close(); // Zamkniêcie aplikacji
             }
 
-            if (!enableWalk)
+            if (!enableWalk && enableSpace)
             {
                 if (e.KeyCode == Keys.Space)
                 {
@@ -136,8 +155,8 @@ namespace WinFormsApp1
                     int lineCenterX = linePosition + lineWidth / 2;
                     int distanceFromCenter = Math.Abs(lineCenterX - pictureBoxCenterX);
 
-                    Debug.WriteLine("Width: " + pictureBoxHit.Width);
-                    Debug.WriteLine("dystans: " + distanceFromCenter);
+                    //Debug.WriteLine("Width: " + pictureBoxHit.Width);
+                    //Debug.WriteLine("dystans: " + distanceFromCenter);
 
                     // Maksymalna odleg³oœæ od œrodka PictureBox (maksymalna wartoœæ obra¿eñ)
                     int maxDistance = pictureBoxHit.Width / 2;
@@ -146,27 +165,61 @@ namespace WinFormsApp1
                     double normalizedDistance = (double)distanceFromCenter / maxDistance * 100;
 
                     // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
-                    damage = Math.Max(100 - (int)normalizedDistance, 0);
+                    int damage2 = Math.Max(100 - (int)normalizedDistance, 0);
+                    damage = (player.Strength + damage2) / 10;
 
 
                     Debug.WriteLine($"DAMAGE: {damage}");
 
-                    damageLabel.Text = $"-{damage}";
-                    damageLabel.Visible = true;
+                    labelDamage.Text = $"-{damage}";
+                    labelDamage.Visible = true;
+
+                    //monster.HPCurrent -= player.Strength;
+                    monster.HPCurrent -= damage;
+                    if (monster.HPCurrent > 0)
+                        hpBarMonster.Value = monster.HPCurrent;
+
+
+                    if (monster.HPCurrent <= 0)
+                    {
+                        //potwor umar³
+                        game.Labirynth[x, y].Monster = null;
+                        game.Labirynth[x, y].HasMonster = false;
+                        hpBarMonster.Value = 0;
+                        //pokaz pokoj
+                        panelBackground.Visible = false;
+                        //zmiana muzyki na background
+                        backgroundMusicPlayer.Stop();
+                        backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.mp3"));
+                        backgroundMusicPlayer = new WaveOutEvent();
+                        backgroundMusicPlayer.Init(backgroundMusicReader);
+                        backgroundMusicPlayer.Volume = 1f;
+                        backgroundMusicPlayer.Play();
+                        //wlacz chodzenie
+                        enableWalk = true;
+                        //zwieksz szybkosc linii
+                        lineSpeed += 2;
+                    }
+
+                    labelHpMonster.Text = $"HP {monster.HPCurrent} / {monster.HPMax}";
 
                     // Wyœwietlenie label z wartoœci¹ obra¿eñ
                     //ShowDamageLabel(damage);
-
+                    enableSpace = false;
+                    linePosition = 0;
+                    pictureBoxHit.Visible = false;
+                    timerHitBox.Stop();
+                    timerHitPoints.Start();
                 }
-                return;
+                return; // to tu MUSI byc
             }
 
 
             if (e.KeyCode == Keys.W)
             {
                 //gdzie jestes?
-                int x = player.Coordinates.XCoordinate;
-                int y = player.Coordinates.YCoordinate;
+                //int x = player.Coordinates.XCoordinate;
+                //int y = player.Coordinates.YCoordinate;
                 //w ktor¹ strone patrzysz?
                 EDirection direction = player.Direction;
                 //czy œciana na ktora patrzysz nie jest solidna?
@@ -253,11 +306,11 @@ namespace WinFormsApp1
             {
                 if (game.Labirynth[x, y].HasMonster)
                 {
-
-                    hpBarEnemy.Maximum = game.Labirynth[x,y].Monster.HPMax; 
-                    hpBarEnemy.Value = game.Labirynth[x, y].Monster.HPCurrent;
+                    hpBarMonster.Maximum = game.Labirynth[x, y].Monster.HPMax;
+                    hpBarMonster.Value = game.Labirynth[x, y].Monster.HPCurrent;
                     hpBarPlayer.Maximum = player.HPMax;
                     hpBarPlayer.Value = player.HPCurrent;
+                    labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPMax}";
                     // 1. przygotuj pole walki
                     //zrob ciemno
                     panelBackground.Visible = true;
@@ -265,7 +318,8 @@ namespace WinFormsApp1
 
                     //blokuj chodzenie
                     enableWalk = false;
-                    Monster monster = game.Labirynth[x, y].Monster;
+                    monster = game.Labirynth[x, y].Monster;
+                    labelHpMonster.Text = $"HP {monster.HPCurrent} / {monster.HPMax}";
 
                     Bitmap monsterImage = new Bitmap(monster.ImagePath);
                     //rysuj w picturebox
@@ -383,41 +437,15 @@ namespace WinFormsApp1
             //TODO
         }
 
-        private void buttonFight_Click(object sender, EventArgs e)
+        private async void buttonFight_Click(object sender, EventArgs e)
         {
-            //pictureBoxHit.Visible = true;
-            //timerHitBox.Start();
-            int x = player.Coordinates.XCoordinate;
-            int y = player.Coordinates.YCoordinate;
-            Monster monster = game.Labirynth[x, y].Monster;
-            monster.HPCurrent -= player.Strength;
-
-            if (monster.HPCurrent <= 0)
-            {
-                game.Labirynth[x,y].Monster = null;
-                game.Labirynth[x,y].HasMonster = false;
-                hpBarEnemy.Value = 0;
-                //pokaz pokoj
-                panelBackground.Visible = false;
-                //zmiana muzyki na background
-                backgroundMusicPlayer.Stop();
-                backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.mp3"));
-                backgroundMusicPlayer = new WaveOutEvent();
-                backgroundMusicPlayer.Init(backgroundMusicReader);
-                backgroundMusicPlayer.Volume = 1f;
-                backgroundMusicPlayer.Play();
-                //wlacz chodzenie
-                enableWalk = true;
-            }
-            else
-            {
-                hpBarEnemy.Value = monster.HPCurrent;
-                Debug.WriteLine(player.Strength);
-                playerRound = false;
-                monsterAttack();
-                //timerHitPoints.Start();
-
-            }
+            enableSpace = true;
+            //walka
+            pictureBoxHit.Visible = true;
+            timerHitBox.Start();
+            playerRound = false;
+            Thread.Sleep(15); // Czas na prze³¹czenie tur
+            monsterAttack();
         }
 
 
@@ -430,32 +458,27 @@ namespace WinFormsApp1
         private void timerHitBox_Tick(object sender, EventArgs e)
         {
             // Poruszanie siê linii z lewej do prawej
-            linePosition += 8;
+            linePosition += lineSpeed;
             if (linePosition > pictureBoxHit.Width) // jesli wyjdzie za pole pictureBox
             {
-                timerHitBox.Stop(); // Zatrzymaj timer
+                //timerHitBox.Stop(); // Zatrzymaj timer
                 linePosition = 0; // Zresetuj pozycjê linii
                 pictureBoxHit.Visible = false; // Ukryj PictureBox
                 damage = 0; // Zeruj obra¿enia
-            }
+                labelDamage.Text = "MISS";
 
-            pictureBoxHit.Invalidate(); // Odœwie¿enie PictureBox
+            }
+            pictureBoxHit.Invalidate();
         }
 
         private async void monsterAttack()
         {
-            int x = player.Coordinates.XCoordinate;
-            int y = player.Coordinates.YCoordinate;
-
-            Monster monster = game.Labirynth[x, y].Monster;
             //potwor bije
             if (!playerRound)
             {
                 //czy potwor zyje
-                if (monster.HPCurrent > 0)
+                if (monster != null && monster.HPCurrent > 0)
                 {
-                    //przygotuj
-
                     //wylacz przyciski
                     buttonFight.Enabled = false;
                     buttonItem.Enabled = false;
@@ -463,7 +486,6 @@ namespace WinFormsApp1
                     buttonFight.BackColor = Color.Gray;
                     await Task.Delay(1000);
                     //animacja bicia
-                    //AnimateFade(Color.Red, Color.Transparent, 1000); // Animacja od czerwonego do przezroczystego w ci¹gu 1 sekundy
                     //damage
                     Random rnd = new Random();
                     int damageToPlayer = rnd.Next(monster.Strength - monster.Strength / 2, monster.Strength + monster.Strength / 2);
@@ -480,11 +502,19 @@ namespace WinFormsApp1
                         backgroundMusicPlayer.Volume = 0.7f;
 
                         backgroundMusicPlayer.Play();
+
+                        buttonFight.Enabled = true;
+                        buttonItem.Enabled = true;
+                        buttonItem.BackColor = Color.White;
+                        buttonFight.BackColor = Color.White;
                         return;
                     }
                     hpBarPlayer.Value -= damageToPlayer;
-                    Debug.WriteLine($"damage playera: {damageToPlayer}");
-                    await Task.Delay(500);
+                    //Debug.WriteLine($"damage playera: {damageToPlayer}");
+                    labelDamagePlayer.Visible = true;
+                    labelDamagePlayer.Text = $"-{damageToPlayer}";
+                    timerHitPointsPlayer.Start();
+                    await Task.Delay(1000);
                     buttonFight.Enabled = true;
                     buttonItem.Enabled = true;
                     buttonItem.BackColor = Color.White;
@@ -501,18 +531,55 @@ namespace WinFormsApp1
 
         private void buttonReplay_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("jezcze raaaaaaaaaaaaaz");
             enableWalk = true;
             setMonster = false;
             isGameOver = false;
+            playerRound = true;
             player = new Player("player", null, 100, 100, 30, 20);
             game = new Game(player);
+            panelOverlay.Visible = false;
+            panelBackground.Visible = false;
+            buttonFight.Enabled = true;
+            buttonItem.Enabled = true;
+            buttonFight.BackColor = Color.White;
+            buttonItem.BackColor = Color.White;
             Invalidate();
         }
 
         private void buttonExit_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void labelHpPlayer_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timerHitPoints_Tick(object sender, EventArgs e)
+        {
+            labelDamage.Top -= 5;
+            animationStep++;
+            if (animationStep == 15)
+            {
+                labelDamage.Location = new Point(Width / 2, 115);
+                animationStep = 0;
+                labelDamage.Visible = false;
+                timerHitPoints.Stop();
+            }
+        }
+
+        private void timerHitPointsPlayer_Tick(object sender, EventArgs e)
+        {
+            labelDamagePlayer.Top -= 5;
+            animationStep++;
+            if (animationStep == 15)
+            {
+                labelDamagePlayer.Location = new Point(974, 600);
+                animationStep = 0;
+                labelDamagePlayer.Visible = false;
+                timerHitPointsPlayer.Stop();
+            }
         }
     }
 }
