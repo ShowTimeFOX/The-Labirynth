@@ -68,7 +68,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            Monster m01 = new Monster("Asriel", Path.Combine("..", "..", "..", "..", "img/asriel.png"), 20, 200, 50, 60);
+            Monster m01 = new Monster("Asriel", Path.Combine("..", "..", "..", "..", "img/asriel.png"), 20, 200, 20, 60);
             labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
 
             Wall[] wallsRoomX0Y2 = new Wall[]

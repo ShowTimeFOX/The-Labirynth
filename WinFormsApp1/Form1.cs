@@ -19,8 +19,8 @@ namespace WinFormsApp1
         private AudioFileReader backgroundMusicReader;
         private WaveOutEvent stepSoundPlayer;
         private AudioFileReader stepSoundReader;
-        //private WaveOutEvent backgroundMusicPlayer;
-        //private AudioFileReader backgroundMusicReader;
+        private WaveOutEvent otherMusicPlayer;
+        private AudioFileReader otherMusicReader;
         private Game game;
         private Player player;
         private Monster monster;
@@ -44,13 +44,17 @@ namespace WinFormsApp1
         private int lineWidth; // Szerokoœæ linii
         private int lineHeight; // Wysokoœæ linii
         private int lineSpeed = 8; // szybkosc linii
-        private bool enableSpace; // Flaga okreœlaj¹ca, czy spacja zosta³a naciœniêta
+        private bool enableSpace; // Flaga okreœlaj¹ca, czy spacja mzoe byc nacisnieta
         private int damage; // Wartoœæ uszkodzenia zadawanego przez gracza
 
         private bool playerRound = true; //czyja kolej na bicie
 
         static int animationStep = 0;
-        static AutoResetEvent animationFinished = new AutoResetEvent(false);
+        static int animationStepPlayer = 0;
+
+        private TaskCompletionSource<bool> spaceKeyPressTcs;
+
+        bool wykonano = false;
 
         public Form1()
         {
@@ -86,11 +90,7 @@ namespace WinFormsApp1
 
             panelPlayerControls.Controls.Add(buttonFight);
             panelPlayerControls.Controls.Add(buttonItem);
-            //pictureBoxHit.Size = new Size(panelPlayerControls.Width, panelPlayerControls.Height);
 
-            //HP BAR przeciwnik
-            //hpBarMonster.Location = new Point(panelBackground.Width - 300, 100);
-            //hpBarMonster.Size = new Size(200, 30);
             hpBarMonster.Minimum = 0;
             hpBarMonster.Maximum = 100; // Maksymalna wartoœæ HP
             hpBarMonster.Value = 100; // Aktualna wartoœæ HP
@@ -129,6 +129,8 @@ namespace WinFormsApp1
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            e.Handled = true;
+            e.SuppressKeyPress = true;// to zapobiega temu dziwkowi systemowemu
             int x = player.Coordinates.XCoordinate;
             int y = player.Coordinates.YCoordinate;
 
@@ -147,16 +149,15 @@ namespace WinFormsApp1
 
             if (!enableWalk && enableSpace)
             {
+                Debug.WriteLine("spacja start");
                 if (e.KeyCode == Keys.Space)
                 {
+                    Debug.WriteLine("spacja spacja");
+                    
                     // Obliczenie odleg³oœci pozycji kreski od œrodka obrazu
-                    //int distanceFromCenter = Math.Abs(linePosition + lineWidth / 2 - 388 / 2);
                     int pictureBoxCenterX = pictureBoxHit.Width / 2;
                     int lineCenterX = linePosition + lineWidth / 2;
                     int distanceFromCenter = Math.Abs(lineCenterX - pictureBoxCenterX);
-
-                    //Debug.WriteLine("Width: " + pictureBoxHit.Width);
-                    //Debug.WriteLine("dystans: " + distanceFromCenter);
 
                     // Maksymalna odleg³oœæ od œrodka PictureBox (maksymalna wartoœæ obra¿eñ)
                     int maxDistance = pictureBoxHit.Width / 2;
@@ -167,18 +168,14 @@ namespace WinFormsApp1
                     // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
                     int damage2 = Math.Max(100 - (int)normalizedDistance, 0);
                     damage = (player.Strength + damage2) / 10;
-
-
-                    Debug.WriteLine($"DAMAGE: {damage}");
+                    //Debug.WriteLine($"DAMAGE: {damage}");
 
                     labelDamage.Text = $"-{damage}";
                     labelDamage.Visible = true;
 
-                    //monster.HPCurrent -= player.Strength;
                     monster.HPCurrent -= damage;
                     if (monster.HPCurrent > 0)
                         hpBarMonster.Value = monster.HPCurrent;
-
 
                     if (monster.HPCurrent <= 0)
                     {
@@ -188,6 +185,12 @@ namespace WinFormsApp1
                         hpBarMonster.Value = 0;
                         //pokaz pokoj
                         panelBackground.Visible = false;
+                        //muzyka zwyciestwo
+                        otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/win.mp3"));
+                        otherMusicPlayer = new WaveOutEvent();
+                        otherMusicPlayer.Init(otherMusicReader);
+                        otherMusicPlayer.Volume = 1f;
+                        otherMusicPlayer.Play();
                         //zmiana muzyki na background
                         backgroundMusicPlayer.Stop();
                         backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.mp3"));
@@ -204,13 +207,14 @@ namespace WinFormsApp1
                     labelHpMonster.Text = $"HP {monster.HPCurrent} / {monster.HPMax}";
 
                     // Wyœwietlenie label z wartoœci¹ obra¿eñ
-                    //ShowDamageLabel(damage);
                     enableSpace = false;
                     linePosition = 0;
                     pictureBoxHit.Visible = false;
                     timerHitBox.Stop();
                     timerHitPoints.Start();
                 }
+                wykonano = true;
+                spaceKeyPressTcs.TrySetResult(true);
                 return; // to tu MUSI byc
             }
 
@@ -255,14 +259,7 @@ namespace WinFormsApp1
                     //rysuj pokój
                     Invalidate();
                 }
-
-                //nie mozna isc i tyle
-                //dzwiêk moze mozna dac jakis czy cos ewentualnie
-
-                //MessageBox.Show("idziesz do przodu");
             }
-
-
             if (e.KeyCode == Keys.D) //odwrócenie gracza w prawo
             {
                 player.Direction = EnumExtensions.Next(player.Direction);
@@ -306,6 +303,8 @@ namespace WinFormsApp1
             {
                 if (game.Labirynth[x, y].HasMonster)
                 {
+                    Debug.WriteLine("1. Przygotowanie do walki");
+                    ///////////////////////////////////////////////
                     hpBarMonster.Maximum = game.Labirynth[x, y].Monster.HPMax;
                     hpBarMonster.Value = game.Labirynth[x, y].Monster.HPCurrent;
                     hpBarPlayer.Maximum = player.HPMax;
@@ -442,10 +441,13 @@ namespace WinFormsApp1
             enableSpace = true;
             //walka
             pictureBoxHit.Visible = true;
+            linePosition = 0;
             timerHitBox.Start();
             playerRound = false;
-            Thread.Sleep(15); // Czas na prze³¹czenie tur
-            monsterAttack();
+
+            spaceKeyPressTcs = new TaskCompletionSource<bool>();
+            await spaceKeyPressTcs.Task;
+            await monsterAttack();
         }
 
 
@@ -461,21 +463,20 @@ namespace WinFormsApp1
             linePosition += lineSpeed;
             if (linePosition > pictureBoxHit.Width) // jesli wyjdzie za pole pictureBox
             {
-                //timerHitBox.Stop(); // Zatrzymaj timer
                 linePosition = 0; // Zresetuj pozycjê linii
                 pictureBoxHit.Visible = false; // Ukryj PictureBox
                 damage = 0; // Zeruj obra¿enia
                 labelDamage.Text = "MISS";
-
+                spaceKeyPressTcs.TrySetResult(true);
             }
             pictureBoxHit.Invalidate();
         }
 
-        private async void monsterAttack()
-        {
+        private async Task monsterAttack()
+        {   
             //potwor bije
             if (!playerRound)
-            {
+            {               
                 //czy potwor zyje
                 if (monster != null && monster.HPCurrent > 0)
                 {
@@ -486,7 +487,6 @@ namespace WinFormsApp1
                     buttonFight.BackColor = Color.Gray;
                     await Task.Delay(1000);
                     //animacja bicia
-                    //damage
                     Random rnd = new Random();
                     int damageToPlayer = rnd.Next(monster.Strength - monster.Strength / 2, monster.Strength + monster.Strength / 2);
                     player.HPCurrent -= damageToPlayer;
@@ -513,6 +513,7 @@ namespace WinFormsApp1
                     //Debug.WriteLine($"damage playera: {damageToPlayer}");
                     labelDamagePlayer.Visible = true;
                     labelDamagePlayer.Text = $"-{damageToPlayer}";
+                    Debug.WriteLine(labelDamagePlayer.Location);
                     timerHitPointsPlayer.Start();
                     await Task.Delay(1000);
                     buttonFight.Enabled = true;
@@ -572,11 +573,11 @@ namespace WinFormsApp1
         private void timerHitPointsPlayer_Tick(object sender, EventArgs e)
         {
             labelDamagePlayer.Top -= 5;
-            animationStep++;
-            if (animationStep == 15)
+            animationStepPlayer++;
+            if (animationStepPlayer == 15)
             {
-                labelDamagePlayer.Location = new Point(974, 600);
-                animationStep = 0;
+                labelDamagePlayer.Location = new Point(1113, 800);
+                animationStepPlayer = 0;
                 labelDamagePlayer.Visible = false;
                 timerHitPointsPlayer.Stop();
             }
