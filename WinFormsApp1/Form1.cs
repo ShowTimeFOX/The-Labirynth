@@ -242,19 +242,33 @@ namespace WinFormsApp1
                     {
                         case EDirection.North:
                             player.Coordinates.YCoordinate += 1;
-
+                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
+                            {
+                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
+                            }
+                            //trzeba to bedzie poprawiÊ ALE TO P”èNIEJ
                             break;
                         case EDirection.East:
                             player.Coordinates.XCoordinate += 1;
-
+                            //Dodawanie do mapy miejsc w ktÛrych by≥ gracz to jest straszne od strony kodu...
+                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
+                            {
+                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
+                            }
                             break;
                         case EDirection.South:
                             player.Coordinates.YCoordinate -= 1;
-
+                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
+                            {
+                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
+                            }
                             break;
                         case EDirection.West:
                             player.Coordinates.XCoordinate -= 1;
-
+                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
+                            {
+                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
+                            }
                             break;
                     }
                     // TODO: tutaj trzeba daÊ sprawdzanie czy nie wyjdzie za labirynt xd
@@ -275,12 +289,15 @@ namespace WinFormsApp1
             }
             if (e.KeyCode == Keys.A) //odwrÛcenie gracza w lewo
             {
-
                 player.Direction = EnumExtensions.Previous(player.Direction);
-
                 Invalidate();
-
             }
+            if (e.KeyCode == Keys.M)
+            {
+                game.Map.isMapShown = !game.Map.isMapShown; //To po prostu jeúli nie ma mapy pokaø, jak jest to nie pokazuj
+                Invalidate();
+            }
+
 
         }
 
@@ -395,6 +412,53 @@ namespace WinFormsApp1
 
             }
 
+            if(game.Map.isMapShown == true) //OdczÛwam bÛl jak patrzÍ na to gÛwno....
+            {
+                using (Image bigMap_img = Image.FromStream(new MemoryStream(game.Map.BigMap)))
+                {
+                    g.DrawImage(bigMap_img, new Rectangle(0, 0, Width, Height));
+                }
+
+                List<Coordinates> cordy = game.Map.discoveredMapCoordinates;
+
+                // Tym moøna przesuwaÊ gdzie ta mapa ma siÍ wyúwietlac na tym zdjÍciu tej poszarpanej mapy
+                int baseXposition = 1500;
+                int baseYposition = 8500;
+                foreach (var w in cordy)
+                {
+                    byte[] fragment = game.Map.mapFragments[w];
+                    int XCoordinate = w.XCoordinate;
+                    int YCoordinate = w.YCoordinate;
+
+                    int Xpostion = baseXposition + XCoordinate * 1910;
+                    int Ypostion = baseYposition + YCoordinate * (-1000);
+
+                    if(player.Coordinates.Equals(w))
+                    {
+                        //int newWidth = Width - 500;
+                        //int newHeight = Height - 200;
+                        int pointerXPostion = Xpostion + 250;
+                        int pointerYPostion = Ypostion + 100;
+                        using (Image pointerTodraw = Image.FromStream(new MemoryStream(game.Map.pointer)))
+                        {
+                            float scaleFactor = 0.1f;
+                            g.ScaleTransform(scaleFactor, scaleFactor);
+
+                            g.DrawImage(pointerTodraw, new Rectangle(pointerXPostion, pointerYPostion, 1400, 800));
+                        }
+                        g.ResetTransform();
+                    }
+
+                    using (Image fragmentToDraw = Image.FromStream(new MemoryStream(fragment)))
+                    {
+                        float scaleFactor = 0.1f;
+                        g.ScaleTransform(scaleFactor, scaleFactor);
+                        g.DrawImage(fragmentToDraw, new Rectangle(Xpostion, Ypostion, Width, Height));
+                    }
+                    g.ResetTransform();
+                }
+
+            }
 
         }
         // Metoda aktualizujπca obrÛt obrazu kompasu
