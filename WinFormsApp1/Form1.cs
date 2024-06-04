@@ -43,7 +43,7 @@ namespace WinFormsApp1
         private int linePosition; // Pozycja pozioma linii
         private int lineWidth; // Szerokoœæ linii
         private int lineHeight; // Wysokoœæ linii
-        private int lineSpeed = 8; // szybkosc linii
+        private int lineSpeed = 10; // szybkosc linii
         private bool enableSpace; // Flaga okreœlaj¹ca, czy spacja mzoe byc nacisnieta
         private int damage; // Wartoœæ uszkodzenia zadawanego przez gracza
 
@@ -54,12 +54,9 @@ namespace WinFormsApp1
 
         private TaskCompletionSource<bool> spaceKeyPressTcs;
 
-        bool wykonano = false;
-
         public Form1()
         {
-
-            player = new Player("player", null, 100, 100, 30, 20);
+            player = new Player("Jacek", null, 100, 100, 30, 20);
             game = new Game(player);
             InitializeComponent();
         }
@@ -70,7 +67,8 @@ namespace WinFormsApp1
             backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.wav"));
             backgroundMusicPlayer = new WaveOutEvent();
             backgroundMusicPlayer.Init(backgroundMusicReader);
-            backgroundMusicReader.Volume = 0.7f; // Przyk³adowo: 20% g³oœnoœci
+            backgroundMusicReader.Volume = 0.7f;
+            //backgroundMusicPlayer.PlaybackStopped += OnPlaybackStopped; //podwaja poczatek
             backgroundMusicPlayer.Play();
 
             //hitBox
@@ -87,6 +85,9 @@ namespace WinFormsApp1
             panelBackground.Controls.Add(pictureBoxMonster);
 
             panelBackground.Controls.Add(panelPlayerControls);
+            /////////////////////////////////////////////////////////////////
+            //labelDamagePlayer.BringToFront();
+            //panelPlayerControls.Controls.Add(labelDamagePlayer);
 
             panelPlayerControls.Controls.Add(buttonFight);
             panelPlayerControls.Controls.Add(buttonItem);
@@ -105,7 +106,7 @@ namespace WinFormsApp1
             hpBarPlayer.Maximum = 100;
             hpBarPlayer.Value = 100;
 
-            labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPMax}";
+            labelHpPlayer.Text = $"{player.Name} HP {player.HPCurrent} / {player.HPMax}";
 
             //pictureBox1.BackColor = Color.Transparent; - gówno psuje animacje
             pictureBoxMonster.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -153,7 +154,7 @@ namespace WinFormsApp1
                 if (e.KeyCode == Keys.Space)
                 {
                     Debug.WriteLine("spacja spacja");
-                    
+
                     // Obliczenie odleg³oœci pozycji kreski od œrodka obrazu
                     int pictureBoxCenterX = pictureBoxHit.Width / 2;
                     int lineCenterX = linePosition + lineWidth / 2;
@@ -204,7 +205,14 @@ namespace WinFormsApp1
                         lineSpeed += 2;
                     }
 
-                    labelHpMonster.Text = $"HP {monster.HPCurrent} / {monster.HPMax}";
+                    labelHpMonster.Text = $"{monster.Name} HP {monster.HPCurrent} / {monster.HPMax}";
+
+                    //dzwiek potwora
+                    //otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/ouch1.mp3"));
+                    //otherMusicPlayer = new WaveOutEvent();
+                    //otherMusicPlayer.Init(otherMusicReader);
+                    //otherMusicPlayer.Volume = 0.5f;
+                    //otherMusicPlayer.Play();
 
                     // Wyœwietlenie label z wartoœci¹ obra¿eñ
                     enableSpace = false;
@@ -213,7 +221,6 @@ namespace WinFormsApp1
                     timerHitBox.Stop();
                     timerHitPoints.Start();
                 }
-                wykonano = true;
                 spaceKeyPressTcs.TrySetResult(true);
                 return; // to tu MUSI byc
             }
@@ -303,13 +310,11 @@ namespace WinFormsApp1
             {
                 if (game.Labirynth[x, y].HasMonster)
                 {
-                    Debug.WriteLine("1. Przygotowanie do walki");
-                    ///////////////////////////////////////////////
                     hpBarMonster.Maximum = game.Labirynth[x, y].Monster.HPMax;
                     hpBarMonster.Value = game.Labirynth[x, y].Monster.HPCurrent;
                     hpBarPlayer.Maximum = player.HPMax;
                     hpBarPlayer.Value = player.HPCurrent;
-                    labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPMax}";
+                    labelHpPlayer.Text = $"{player.Name} HP {player.HPCurrent} / {player.HPMax}";
                     // 1. przygotuj pole walki
                     //zrob ciemno
                     panelBackground.Visible = true;
@@ -318,7 +323,7 @@ namespace WinFormsApp1
                     //blokuj chodzenie
                     enableWalk = false;
                     monster = game.Labirynth[x, y].Monster;
-                    labelHpMonster.Text = $"HP {monster.HPCurrent} / {monster.HPMax}";
+                    labelHpMonster.Text = $"{monster.Name} HP {monster.HPCurrent} / {monster.HPMax}";
 
                     Bitmap monsterImage = new Bitmap(monster.ImagePath);
                     //rysuj w picturebox
@@ -473,10 +478,10 @@ namespace WinFormsApp1
         }
 
         private async Task monsterAttack()
-        {   
+        {
             //potwor bije
             if (!playerRound)
-            {               
+            {
                 //czy potwor zyje
                 if (monster != null && monster.HPCurrent > 0)
                 {
@@ -490,7 +495,7 @@ namespace WinFormsApp1
                     Random rnd = new Random();
                     int damageToPlayer = rnd.Next(monster.Strength - monster.Strength / 2, monster.Strength + monster.Strength / 2);
                     player.HPCurrent -= damageToPlayer;
-                    labelHpPlayer.Text = $"HP {player.HPCurrent} / {player.HPMax}";
+                    labelHpPlayer.Text = $"{player.Name} HP {player.HPCurrent} / {player.HPMax}";
                     if (player.HPCurrent <= 0)
                     {
                         panelOverlay.Visible = true;
@@ -513,7 +518,14 @@ namespace WinFormsApp1
                     //Debug.WriteLine($"damage playera: {damageToPlayer}");
                     labelDamagePlayer.Visible = true;
                     labelDamagePlayer.Text = $"-{damageToPlayer}";
-                    Debug.WriteLine(labelDamagePlayer.Location);
+
+                    //player dzwiek obrazen
+                    //otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/player_hurt.mp3"));
+                    //otherMusicPlayer = new WaveOutEvent();
+                    //otherMusicPlayer.Init(otherMusicReader);
+                    //otherMusicPlayer.Volume = 0.5f;
+                    //otherMusicPlayer.Play();
+                    //Debug.WriteLine(labelDamagePlayer.Location);
                     timerHitPointsPlayer.Start();
                     await Task.Delay(1000);
                     buttonFight.Enabled = true;
@@ -559,9 +571,9 @@ namespace WinFormsApp1
 
         private void timerHitPoints_Tick(object sender, EventArgs e)
         {
-            labelDamage.Top -= 5;
+            labelDamage.Top -= 3;
             animationStep++;
-            if (animationStep == 15)
+            if (animationStep == 25)
             {
                 labelDamage.Location = new Point(Width / 2, 115);
                 animationStep = 0;
@@ -572,15 +584,34 @@ namespace WinFormsApp1
 
         private void timerHitPointsPlayer_Tick(object sender, EventArgs e)
         {
-            labelDamagePlayer.Top -= 5;
+            labelDamagePlayer.Top -= 3;
             animationStepPlayer++;
-            if (animationStepPlayer == 15)
+            if (animationStepPlayer == 25)
             {
                 labelDamagePlayer.Location = new Point(1113, 800);
+
+                //labelDamagePlayer.Location = new Point(panelPlayerControls.Width, Height - panelPlayerControls.Height);
                 animationStepPlayer = 0;
                 labelDamagePlayer.Visible = false;
                 timerHitPointsPlayer.Stop();
             }
+        }
+
+        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            // Ustawienie pozycji na pocz¹tek i ponowne odtwarzanie
+            backgroundMusicReader.Position = 0;
+            backgroundMusicPlayer.Play();
+        }
+
+        private void pictureBoxHit_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelDamagePlayer_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

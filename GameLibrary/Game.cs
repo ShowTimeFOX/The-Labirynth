@@ -78,7 +78,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            Monster m02 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 60, 100, 20, 30);
+            Monster m02 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 40, 100, 20, 30);
             labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2, true, m02);
 
             Wall[] wallsRoomX0Y3 = new Wall[]
@@ -88,7 +88,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            Monster m03 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
+            Monster m03 = new Monster("Dogge", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
             labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
 
             Wall[] wallsRoomX0Y4 = new Wall[]

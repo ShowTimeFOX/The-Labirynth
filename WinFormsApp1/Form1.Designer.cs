@@ -121,18 +121,19 @@
             // buttonFight
             // 
             buttonFight.Font = new Font("SimSun", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            buttonFight.Location = new Point(3, 47);
+            buttonFight.Location = new Point(3, 72);
             buttonFight.Name = "buttonFight";
             buttonFight.Size = new Size(224, 55);
             buttonFight.TabIndex = 6;
-            buttonFight.Text = "FIGHT";
+            buttonFight.Text = "ATTACK";
             buttonFight.UseVisualStyleBackColor = true;
             buttonFight.Click += buttonFight_Click;
             // 
             // buttonItem
             // 
+            buttonItem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             buttonItem.Font = new Font("SimSun", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            buttonItem.Location = new Point(233, 47);
+            buttonItem.Location = new Point(235, 72);
             buttonItem.Name = "buttonItem";
             buttonItem.Size = new Size(218, 55);
             buttonItem.TabIndex = 7;
@@ -142,6 +143,7 @@
             // 
             // panelPlayerControls
             // 
+            panelPlayerControls.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panelPlayerControls.BackColor = SystemColors.WindowFrame;
             panelPlayerControls.Controls.Add(pictureBoxHit);
             panelPlayerControls.Controls.Add(labelHpPlayer);
@@ -156,34 +158,38 @@
             // 
             // pictureBoxHit
             // 
+            pictureBoxHit.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pictureBoxHit.BackColor = SystemColors.ActiveCaption;
             pictureBoxHit.BackgroundImage = (Image)resources.GetObject("pictureBoxHit.BackgroundImage");
             pictureBoxHit.BackgroundImageLayout = ImageLayout.Stretch;
-            pictureBoxHit.Location = new Point(0, 47);
+            pictureBoxHit.Location = new Point(0, 46);
             pictureBoxHit.Name = "pictureBoxHit";
             pictureBoxHit.Size = new Size(456, 134);
             pictureBoxHit.TabIndex = 10;
             pictureBoxHit.TabStop = false;
             pictureBoxHit.Visible = false;
+            pictureBoxHit.Click += pictureBoxHit_Click;
             pictureBoxHit.Paint += pictureBoxHit_Paint;
             // 
             // labelHpPlayer
             // 
+            labelHpPlayer.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             labelHpPlayer.AutoSize = true;
             labelHpPlayer.Font = new Font("SimSun", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            labelHpPlayer.Location = new Point(279, 7);
+            labelHpPlayer.Location = new Point(3, 10);
             labelHpPlayer.Name = "labelHpPlayer";
-            labelHpPlayer.Size = new Size(166, 24);
+            labelHpPlayer.Size = new Size(231, 24);
             labelHpPlayer.TabIndex = 11;
-            labelHpPlayer.Text = "HP 100 / 100";
+            labelHpPlayer.Text = "Name HP 100 / 100";
             labelHpPlayer.Click += labelHpPlayer_Click;
             // 
             // hpBarPlayer
             // 
+            hpBarPlayer.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             hpBarPlayer.ForeColor = Color.Lime;
-            hpBarPlayer.Location = new Point(3, 3);
+            hpBarPlayer.Location = new Point(3, 38);
             hpBarPlayer.Name = "hpBarPlayer";
-            hpBarPlayer.Size = new Size(270, 28);
+            hpBarPlayer.Size = new Size(450, 28);
             hpBarPlayer.Step = 1;
             hpBarPlayer.Style = ProgressBarStyle.Continuous;
             hpBarPlayer.TabIndex = 10;
@@ -191,8 +197,9 @@
             // 
             // hpBarMonster
             // 
+            hpBarMonster.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             hpBarMonster.ForeColor = Color.Crimson;
-            hpBarMonster.Location = new Point(1338, 27);
+            hpBarMonster.Location = new Point(1279, 56);
             hpBarMonster.Name = "hpBarMonster";
             hpBarMonster.Size = new Size(190, 23);
             hpBarMonster.Step = 1;
@@ -212,9 +219,9 @@
             labelDamage.ForeColor = Color.Red;
             labelDamage.Location = new Point(850, 115);
             labelDamage.Name = "labelDamage";
-            labelDamage.Size = new Size(53, 36);
+            labelDamage.Size = new Size(95, 36);
             labelDamage.TabIndex = 10;
-            labelDamage.Text = "50";
+            labelDamage.Text = "MISS";
             labelDamage.Visible = false;
             // 
             // timerHitPoints
@@ -270,18 +277,20 @@
             // 
             // labelHpMonster
             // 
+            labelHpMonster.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             labelHpMonster.AutoSize = true;
             labelHpMonster.BackColor = SystemColors.ActiveCaptionText;
             labelHpMonster.Font = new Font("SimSun", 18F, FontStyle.Bold, GraphicsUnit.Point);
             labelHpMonster.ForeColor = SystemColors.Control;
-            labelHpMonster.Location = new Point(1351, 60);
+            labelHpMonster.Location = new Point(1259, 23);
             labelHpMonster.Name = "labelHpMonster";
-            labelHpMonster.Size = new Size(166, 24);
+            labelHpMonster.Size = new Size(231, 24);
             labelHpMonster.TabIndex = 12;
-            labelHpMonster.Text = "HP 100 / 100";
+            labelHpMonster.Text = "Name HP 100 / 100";
             // 
             // labelDamagePlayer
             // 
+            labelDamagePlayer.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             labelDamagePlayer.AutoSize = true;
             labelDamagePlayer.Font = new Font("Tahoma", 22.2F, FontStyle.Bold, GraphicsUnit.Point);
             labelDamagePlayer.ForeColor = Color.Red;
@@ -291,6 +300,7 @@
             labelDamagePlayer.TabIndex = 13;
             labelDamagePlayer.Text = "50";
             labelDamagePlayer.Visible = false;
+            labelDamagePlayer.Click += labelDamagePlayer_Click;
             // 
             // timerHitPointsPlayer
             // 
