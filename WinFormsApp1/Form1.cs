@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Media;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
@@ -62,7 +63,7 @@ namespace WinFormsApp1
 
         public Form1()
         {
-            player = new Player("Jacek", null, 100, 100, 30, 20);
+            player = new Player("Dzban", null, 100, 100, 30, 20);
             game = new Game(player);
             InitializeComponent();
         }
@@ -199,8 +200,14 @@ namespace WinFormsApp1
                         hpBarMonster.Value = 0;
                         //pokaz pokoj
                         panelBackground.Visible = false;
-                        //muzyka zwyciestwo
+                        //muzyka zwyciestwo                        
                         otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/win.mp3"));
+                        if (isFinalBoss)
+                        {
+
+                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/stawiam ci 5.mp3"));
+                            timerVoice.Stop();
+                        }
                         otherMusicPlayer = new WaveOutEvent();
                         otherMusicPlayer.Init(otherMusicReader);
                         otherMusicPlayer.Volume = 1f;
@@ -215,6 +222,37 @@ namespace WinFormsApp1
                         //backgroundMusicPlayer.Play();
                         musicPlayer = new SoundPlayer();
                         musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/main.wav");
+                        if (isFinalBoss)
+                        {
+                            //ZAKOÑCZENIE
+                            //obs³uga zakoñczenia
+                            //ciemne t³o
+                            timerBossMotion.Stop();
+                            panelBackground.Visible = true;
+                            pictureBoxMonster.Image = null;
+                            pictureBoxMonster.Visible = true;
+                            pictureBoxMonster.BackColor = Color.Black;
+                            pictureBoxMonster.Location = new Point(0, 0);
+                            pictureBoxMonster.Size = new Size(Width, Height);
+                            //muzyka final
+                            musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/final victory.wav");
+                            //napisy
+                            richTextBox1.Visible = true;
+                            //richTextBox1.Height = richTextBox1.GetPreferredSize(new Size(richTextBox1.Width, 0)).Height;
+                            richTextBox1.BringToFront();
+                            richTextBox1.Location = new Point(200, 0);
+
+                            //this.AutoScroll = true;
+                            richTextBox1.Size = new Size(Width-400, Height);
+                            timerScroll.Start();
+                            richTextBox1.LoadFile(Path.Combine("..", "..", "..", "..", "img/zakonczenie.rtf"));
+                            richTextBox1.Scale(new SizeF(2,2));
+                            
+                            //labelEndText.Visible = true;
+                            labelEndText.BringToFront();
+                            labelEndText.Location = new Point(0, 0);
+                            labelEndText.Text = "\r\n\r\n\r\n\r\n\r\nBRAWO !!!\r\n\r\nSta³em na szczycie swoich mo¿liwoœci, pe³en determinacji i gotowy stawiæ czo³a ostatniej próbie. Przed nami, po wielu trudnych pytaniach o bazy danych i niezliczonych ³amig³ówkach logicznych, stan¹³ Bazodanowiec — uosobienie wszystkich wyzwañ, które musieliœmy pokonaæ.\r\nKa¿de pytanie, ka¿de zagadnienie, to by³y nasze bitwy. Ale w koñcu, gdy ostatni¹ odpowiedŸ znalaz³em na kartach jego zaszyfrowanych danych, hala naszej walki wype³ni³a siê triumfem. Czu³em, jak duma miesza siê z ulg¹. Pokona³em potwora, który próbowa³ zgubiæ nas swoimi labiryntami i pu³apkami logicznymi.\r\nTo zwyciêstwo to nie tylko koniec wyzwañ, ale pocz¹tek nowej ery. Ludzie, których broni³em, mog¹ teraz patrzeæ w przysz³oœæ bez obawy przed trudnymi pytaniami i zagadkami. Widzia³em ich uœmiechy i s³owa wdziêcznoœci.\r\nPatrzê teraz na nasz œwiat, który sta³ siê lepszy dziêki pokonaniu Bazodanowca. To by³ symbolem naszych trudnych pytañ i wyzwañ, które uda³o siê nam pokonaæ. Wiem teraz, ¿e ka¿de trudne pytanie jest do przejœcia, a przysz³oœæ jest pe³na mo¿liwoœci.\r\n\r\n\r\n\r\nWydaje mi siê ze zajebiscie to wymyœli³em\r\nESSA z wami\r\n;3\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n";
+                        }
                         musicPlayer.PlayLooping();
                         //wlacz chodzenie
                         enableWalk = true;
@@ -242,8 +280,7 @@ namespace WinFormsApp1
                 return; // to tu MUSI byc
             }
 
-
-            if (e.KeyCode == Keys.W)
+            if (e.KeyCode == Keys.W && !isFinalBoss)
             {
                 //gdzie jestes?
                 //int x = player.Coordinates.XCoordinate;
@@ -401,6 +438,16 @@ namespace WinFormsApp1
                     //rysuj w picturebox
                     pictureBoxMonster.Visible = true;
                     pictureBoxMonster.Image = monsterImage;
+                    if (isFinalBoss)
+                    {
+                        pictureBoxMonster.Size = new Size(800, 600);
+                        pictureBoxMonster.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                    else
+                    {
+                        pictureBoxMonster.Size = new Size(600, 400);
+                        pictureBoxMonster.SizeMode = PictureBoxSizeMode.Zoom;
+                    }
                     //backgroundMusicPlayer.Stop();
                     musicPlayer.Stop();
                     musicPlayer = new SoundPlayer();
@@ -571,9 +618,31 @@ namespace WinFormsApp1
         private async void buttonFight_Click(object sender, EventArgs e)
         {
             enableSpace = true;
-            //walka
+            // Walka
             pictureBoxHit.Visible = true;
-            linePosition = 0;
+
+            if (isFinalBoss)
+            {
+                lineSpeed = random.Next(12, 20);
+                // Losowo wybierz kierunek startu linii: 0 - od lewej, 1 - od prawej
+                int startDirection = random.Next(0, 2);
+                if (startDirection == 0)
+                {
+                    linePosition = 0;
+                    lineSpeed = Math.Abs(lineSpeed); // Ustaw dodatni¹ prêdkoœæ
+                }
+                else
+                {
+                    linePosition = pictureBoxHit.Width;
+                    lineSpeed = -Math.Abs(lineSpeed); // Ustaw ujemn¹ prêdkoœæ
+                }
+            }
+            else
+            {
+                linePosition = 0;
+                lineSpeed = Math.Abs(lineSpeed); // Standardowa dodatnia prêdkoœæ
+            }
+
             timerHitBox.Start();
             playerRound = false;
 
@@ -581,7 +650,6 @@ namespace WinFormsApp1
             await spaceKeyPressTcs.Task;
             await monsterAttack();
         }
-
 
         private void pictureBoxHit_Paint(object sender, PaintEventArgs e)
         {
@@ -591,18 +659,47 @@ namespace WinFormsApp1
 
         private void timerHitBox_Tick(object sender, EventArgs e)
         {
-            // Poruszanie siê linii z lewej do prawej
             linePosition += lineSpeed;
-            if (linePosition > pictureBoxHit.Width) // jesli wyjdzie za pole pictureBox
+
+            if (isFinalBoss)
             {
-                linePosition = 0; // Zresetuj pozycjê linii
-                pictureBoxHit.Visible = false; // Ukryj PictureBox
-                damage = 0; // Zeruj obra¿enia
-                labelDamage.Text = "MISS";
-                spaceKeyPressTcs.TrySetResult(true);
+                if (linePosition > pictureBoxHit.Width || linePosition < 0)
+                {
+                    // Resetuj pozycjê i prêdkoœæ po wyjœciu poza pole
+                    if (linePosition > pictureBoxHit.Width)
+                    {
+                        linePosition = pictureBoxHit.Width;
+                        lineSpeed = -Math.Abs(lineSpeed); // Ustaw prêdkoœæ na ujemn¹
+                    }
+                    else if (linePosition < 0)
+                    {
+                        linePosition = 0;
+                        lineSpeed = Math.Abs(lineSpeed); // Ustaw prêdkoœæ na dodatni¹
+                    }
+
+                    pictureBoxHit.Visible = false; // Ukryj PictureBox
+                    damage = 0; // Zeruj obra¿enia
+                    labelDamage.Text = "MISS";
+                    spaceKeyPressTcs.TrySetResult(true);
+                }
             }
+            else
+            {
+                // Standardowy ruch linii od lewej do prawej
+                if (linePosition > pictureBoxHit.Width)
+                {
+                    linePosition = 0; // Zresetuj pozycjê linii
+                    pictureBoxHit.Visible = false; // Ukryj PictureBox
+                    damage = 0; // Zeruj obra¿enia
+                    labelDamage.Text = "MISS";
+                    spaceKeyPressTcs.TrySetResult(true);
+                }
+            }
+
             pictureBoxHit.Invalidate();
         }
+
+
 
         private async Task monsterAttack()
         {
@@ -627,8 +724,15 @@ namespace WinFormsApp1
                     {
                         panelOverlay.Visible = true;
                         hpBarPlayer.Value = 0;
-                        backgroundMusicPlayer.Stop();
+                        //backgroundMusicPlayer.Stop();
+                        musicPlayer.Stop();
                         backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/game_over.mp3"));
+                        if (isFinalBoss)
+                        {
+                            timerVoice.Stop();
+                            otherMusicPlayer.Stop();
+                            backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/portier.mp3"));
+                        }
                         backgroundMusicPlayer = new WaveOutEvent();
                         backgroundMusicPlayer.Init(backgroundMusicReader);
                         backgroundMusicPlayer.Volume = 0.7f;
@@ -675,6 +779,10 @@ namespace WinFormsApp1
             setMonster = false;
             isGameOver = false;
             playerRound = true;
+            musicPlayer = new SoundPlayer();
+            musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/main.wav");
+            musicPlayer.PlayLooping();
+
             player = new Player("player", null, 100, 100, 30, 20);
             game = new Game(player);
             panelOverlay.Visible = false;
@@ -683,6 +791,7 @@ namespace WinFormsApp1
             buttonItem.Enabled = true;
             buttonFight.BackColor = Color.White;
             buttonItem.BackColor = Color.White;
+            isFinalBoss = false;
             Invalidate();
         }
 
@@ -722,13 +831,6 @@ namespace WinFormsApp1
                 labelDamagePlayer.Visible = false;
                 timerHitPointsPlayer.Stop();
             }
-        }
-
-        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
-        {
-            // Ustawienie pozycji na pocz¹tek i ponowne odtwarzanie
-            backgroundMusicReader.Position = 0;
-            backgroundMusicPlayer.Play();
         }
 
         private void pictureBoxHit_Click(object sender, EventArgs e)
@@ -788,6 +890,17 @@ namespace WinFormsApp1
         private string[] soundFiles = { "portier.mp3", "zarabiac.mp3", "cholernie.mp3", "sbd.mp3", "boja sie.mp3", "mercedes.mp3", "myslimy.mp3", "wazna cecha.mp3", "cisza.mp3", "podchwytliwe pytanie.mp3", "po cholere.mp3" };
         private Random random = new Random();
 
+        private int scrollSpeed = 1; // Prêdkoœæ przewijania
 
+        private void timerScroll_Tick(object sender, EventArgs e)
+        {
+
+            richTextBox1.Top -= scrollSpeed;
+        }
+
+        private void panelBackground_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

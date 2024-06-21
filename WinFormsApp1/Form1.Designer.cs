@@ -54,6 +54,9 @@
             labelDamagePlayer = new Label();
             timerHitPointsPlayer = new System.Windows.Forms.Timer(components);
             timerVoice = new System.Windows.Forms.Timer(components);
+            richTextBox1 = new RichTextBox();
+            timerScroll = new System.Windows.Forms.Timer(components);
+            labelEndText = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBoxMonster).BeginInit();
             panelPlayerControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxHit).BeginInit();
@@ -114,11 +117,13 @@
             // panelBackground
             // 
             panelBackground.BackColor = Color.Black;
+            panelBackground.ForeColor = Color.Black;
             panelBackground.Location = new Point(0, 0);
             panelBackground.Name = "panelBackground";
             panelBackground.Size = new Size(200, 100);
             panelBackground.TabIndex = 5;
             panelBackground.Visible = false;
+            panelBackground.Paint += panelBackground_Paint;
             // 
             // buttonFight
             // 
@@ -314,12 +319,49 @@
             timerVoice.Interval = 10000;
             timerVoice.Tick += timerVoice_Tick;
             // 
+            // richTextBox1
+            // 
+            richTextBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            richTextBox1.BackColor = Color.Black;
+            richTextBox1.BorderStyle = BorderStyle.None;
+            richTextBox1.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point);
+            richTextBox1.ForeColor = Color.White;
+            richTextBox1.ImeMode = ImeMode.On;
+            richTextBox1.Location = new Point(0, 0);
+            richTextBox1.Name = "richTextBox1";
+            richTextBox1.ReadOnly = true;
+            richTextBox1.ScrollBars = RichTextBoxScrollBars.None;
+            richTextBox1.Size = new Size(100, 96);
+            richTextBox1.TabIndex = 14;
+            richTextBox1.Text = "zakonczenie\ncos tam\nhejcia\nuga buga";
+            richTextBox1.Visible = false;
+            // 
+            // timerScroll
+            // 
+            timerScroll.Interval = 30;
+            timerScroll.Tick += timerScroll_Tick;
+            // 
+            // labelEndText
+            // 
+            labelEndText.AutoSize = true;
+            labelEndText.Font = new Font("Segoe UI", 22.2F, FontStyle.Regular, GraphicsUnit.Point);
+            labelEndText.ForeColor = Color.White;
+            labelEndText.Location = new Point(34, 120);
+            labelEndText.Name = "labelEndText";
+            labelEndText.Size = new Size(184, 41);
+            labelEndText.TabIndex = 15;
+            labelEndText.Text = "labelEndText";
+            labelEndText.TextAlign = ContentAlignment.TopCenter;
+            labelEndText.Visible = false;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlText;
             ClientSize = new Size(1540, 845);
+            Controls.Add(labelEndText);
+            Controls.Add(richTextBox1);
             Controls.Add(labelDamagePlayer);
             Controls.Add(labelDamage);
             Controls.Add(panelOverlay);
@@ -378,5 +420,8 @@
         private Label labelDamagePlayer;
         private System.Windows.Forms.Timer timerHitPointsPlayer;
         private System.Windows.Forms.Timer timerVoice;
+        private RichTextBox richTextBox1;
+        private System.Windows.Forms.Timer timerScroll;
+        private Label labelEndText;
     }
 }

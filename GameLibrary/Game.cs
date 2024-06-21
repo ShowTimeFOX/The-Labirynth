@@ -15,10 +15,6 @@ namespace GameLibrary
         private Dictionary<string, byte[]> imageCache = new Dictionary<string, byte[]>();
         string ImageDirectory = Path.Combine("..", "..", "..", "..", "img/"); //TODO sciezka wzgledna do projektu
         public Map Map = new Map(); // Instancja mapy
-        
-
-
-        
 
         public Room[,] Labirynth
         {
@@ -48,7 +44,9 @@ namespace GameLibrary
             
 
             this.CreateLabyrynth();
-            player.Coordinates = new Coordinates(0, 0);
+            //player.Coordinates = new Coordinates(0, 0);
+            ////////////////ZMIENIC//////////////////////////////////////////////////////////////////////////////////////////
+            player.Coordinates = new Coordinates(4,5);
             player.Direction = EDirection.North;
         }
 
@@ -72,8 +70,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             Monster m01 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 20, 100, 10, 60);
-            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
-            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
+            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
+            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
 
             Wall[] wallsRoomX0Y2 = new Wall[]
             {
@@ -391,7 +389,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
-            Monster m55 = new Monster("POTĘŻNY BAZODANOWIEC", Path.Combine("..", "..", "..", "..", "img/finalboss.png"), 200, 200, 30, 30);
+            Monster m55 = new Monster("POTĘŻNY BAZODANOWIEC", Path.Combine("..", "..", "..", "..", "img/finalboss.png"), 30, 200, 30, 30);
             labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5, true, m55);
             //labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5);
         }
