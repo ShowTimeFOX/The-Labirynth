@@ -1,6 +1,7 @@
 using GameLibrary;
 using NAudio.Dmo;
 using NAudio.Wave;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -17,6 +18,9 @@ namespace WinFormsApp1
     {
         private WaveOutEvent backgroundMusicPlayer;
         private AudioFileReader backgroundMusicReader;
+
+        private SoundPlayer musicPlayer;
+
         private WaveOutEvent stepSoundPlayer;
         private AudioFileReader stepSoundReader;
         private WaveOutEvent otherMusicPlayer;
@@ -54,6 +58,8 @@ namespace WinFormsApp1
 
         private TaskCompletionSource<bool> spaceKeyPressTcs;
 
+        private bool isFinalBoss = false;
+
         public Form1()
         {
             player = new Player("Jacek", null, 100, 100, 30, 20);
@@ -64,12 +70,16 @@ namespace WinFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.wav"));
-            backgroundMusicPlayer = new WaveOutEvent();
-            backgroundMusicPlayer.Init(backgroundMusicReader);
-            backgroundMusicReader.Volume = 0.7f;
-            //backgroundMusicPlayer.PlaybackStopped += OnPlaybackStopped; //podwaja poczatek
-            backgroundMusicPlayer.Play();
+            //backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.wav"));
+            //backgroundMusicPlayer = new WaveOutEvent();
+            //backgroundMusicPlayer.Init(backgroundMusicReader);
+            //backgroundMusicReader.Volume = 0.7f;
+            //backgroundMusicPlayer.Play();
+            ///////////
+            musicPlayer = new SoundPlayer();
+            musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/main.wav");
+            musicPlayer.PlayLooping();
+
 
             //hitBox
             linePosition = 0;
@@ -111,8 +121,11 @@ namespace WinFormsApp1
             //pictureBox1.BackColor = Color.Transparent; - gÛwno psuje animacje
             pictureBoxMonster.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBoxMonster.Visible = false;
-            centerX = Width / 2 - 165;
-            centerY = Height / 2 - 340;
+
+
+            centerX = Width / 2 - pictureBoxMonster.Width / 2;
+            centerY = Height / 2 - pictureBoxMonster.Height / 2 - 100; // jak bedzie giga boss to nie moze zaslaniac obslugi walki
+            //Debug.WriteLine("WHOAAAA "+pictureBoxMonster.Width);
             timerBossMotion.Start();
 
             panelBackground.Controls.Add(labelDamagePlayer);
@@ -193,12 +206,16 @@ namespace WinFormsApp1
                         otherMusicPlayer.Volume = 1f;
                         otherMusicPlayer.Play();
                         //zmiana muzyki na background
-                        backgroundMusicPlayer.Stop();
-                        backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.mp3"));
-                        backgroundMusicPlayer = new WaveOutEvent();
-                        backgroundMusicPlayer.Init(backgroundMusicReader);
-                        backgroundMusicPlayer.Volume = 1f;
-                        backgroundMusicPlayer.Play();
+                        //backgroundMusicPlayer.Stop();
+                        musicPlayer.Stop();
+                        //backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/main.mp3"));
+                        //backgroundMusicPlayer = new WaveOutEvent();
+                        //backgroundMusicPlayer.Init(backgroundMusicReader);
+                        //backgroundMusicPlayer.Volume = 1f;
+                        //backgroundMusicPlayer.Play();
+                        musicPlayer = new SoundPlayer();
+                        musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/main.wav");
+                        musicPlayer.PlayLooping();
                         //wlacz chodzenie
                         enableWalk = true;
                         //zwieksz szybkosc linii
@@ -234,52 +251,90 @@ namespace WinFormsApp1
                 //w ktorπ strone patrzysz?
                 EDirection direction = player.Direction;
                 //czy úciana na ktora patrzysz nie jest solidna?
+
+                int width = game.Labirynth.GetLength(0); // SzerokoúÊ tablicy
+                int height = game.Labirynth.GetLength(1); // WysokoúÊ tablicy
+
+                bool IsValidMove(int x, int y)
+                {
+                    return x >= 0 && x < width && y >= 0 && y < height;
+                }
+
+                void MovePlayer(int newX, int newY)
+                {
+                    if (IsValidMove(newX, newY))
+                    {
+                        player.Coordinates.XCoordinate = newX;
+                        player.Coordinates.YCoordinate = newY;
+
+                        if (!game.Map.discoveredMapCoordinates.Contains(new Coordinates(newX, newY)))
+                        {
+                            game.Map.discoveredMapCoordinates.Add(new Coordinates(newX, newY));
+                        }
+                        // Odtwarzanie düwiÍku kroku
+                        stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/walk_cutted.mp3"));
+                        stepSoundPlayer = new WaveOutEvent();
+                        stepSoundPlayer.Init(stepSoundReader);
+                        stepSoundReader.Position = 0;
+                        stepSoundPlayer.Play();
+
+                        // Sprawdzenie, czy gracz jest na koÒcu labiryntu
+                        if (newX == 5 && newY == 5)
+                        {
+                            labelDamagePlayer.BringToFront();
+                            labelDamage.BringToFront();
+                            Debug.WriteLine(":KONIEC");
+                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/sbd.mp3"));
+                            otherMusicPlayer = new WaveOutEvent();
+                            otherMusicPlayer.Init(otherMusicReader);
+                            otherMusicPlayer.Volume = 1f;
+                            otherMusicPlayer.Play();
+                            isFinalBoss = true;
+                            timerVoice.Start();
+                        }
+                    }
+                    else
+                    {
+                        //nie mozna isc
+                        // Odtwarzanie düwiÍku kroku
+                        stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/try to open door.mp3"));
+                        stepSoundPlayer = new WaveOutEvent();
+                        stepSoundPlayer.Volume = .5f;
+                        stepSoundPlayer.Init(stepSoundReader);
+                        stepSoundReader.Position = 0;
+                        stepSoundPlayer.Play();
+                    }
+                }
+
                 if (game.Labirynth[x, y].Walls[(int)direction].WallType != EWallType.Solid)
                 {
-                    //tak -> mozna isc
-                    //labirynt[x, y] idz tam gdzie patrzysz; +1 w danym kierunku
+                    int newX = player.Coordinates.XCoordinate;
+                    int newY = player.Coordinates.YCoordinate;
+
                     switch (direction)
                     {
                         case EDirection.North:
-                            player.Coordinates.YCoordinate += 1;
-                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
-                            {
-                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
-                            }
-                            //trzeba to bedzie poprawiÊ ALE TO P”èNIEJ
+                            newY += 1;
                             break;
                         case EDirection.East:
-                            player.Coordinates.XCoordinate += 1;
-                            //Dodawanie do mapy miejsc w ktÛrych by≥ gracz to jest straszne od strony kodu...
-                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
-                            {
-                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
-                            }
+                            newX += 1;
                             break;
                         case EDirection.South:
-                            player.Coordinates.YCoordinate -= 1;
-                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
-                            {
-                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
-                            }
+                            newY -= 1;
                             break;
                         case EDirection.West:
-                            player.Coordinates.XCoordinate -= 1;
-                            if (!game.Map.discoveredMapCoordinates.Contains(player.Coordinates))
-                            {
-                                game.Map.discoveredMapCoordinates.Add(new Coordinates(player.Coordinates.XCoordinate, player.Coordinates.YCoordinate));
-                            }
+                            newX -= 1;
                             break;
                     }
-                    // TODO: tutaj trzeba daÊ sprawdzanie czy nie wyjdzie za labirynt xd
-                    stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/walk_cutted.mp3"));
-                    stepSoundPlayer = new WaveOutEvent();
-                    stepSoundPlayer.Init(stepSoundReader);
-                    stepSoundReader.Position = 0;
-                    stepSoundPlayer.Play();
-                    //rysuj pokÛj
+
+                    MovePlayer(newX, newY);
+
+
+
+                    // Rysowanie pokoju
                     Invalidate();
                 }
+
             }
             if (e.KeyCode == Keys.D) //odwrÛcenie gracza w prawo
             {
@@ -346,12 +401,20 @@ namespace WinFormsApp1
                     //rysuj w picturebox
                     pictureBoxMonster.Visible = true;
                     pictureBoxMonster.Image = monsterImage;
-                    backgroundMusicPlayer.Stop();
-                    backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/bossFight1.mp3"));
-                    backgroundMusicPlayer = new WaveOutEvent();
-                    backgroundMusicPlayer.Init(backgroundMusicReader);
-                    backgroundMusicPlayer.Volume = 0.7f;
-                    backgroundMusicPlayer.Play();
+                    //backgroundMusicPlayer.Stop();
+                    musicPlayer.Stop();
+                    musicPlayer = new SoundPlayer();
+                    musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/bossFight1.wav");
+                    if (isFinalBoss)
+                        musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/Final Showdown.wav");
+                    musicPlayer.PlayLooping();
+                    //backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/bossFight1.mp3"));
+                    //if (isFinalBoss)
+                    //    backgroundMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/Final Showdown.mp3"));
+                    //backgroundMusicPlayer = new WaveOutEvent();
+                    //backgroundMusicPlayer.Init(backgroundMusicReader);
+                    //backgroundMusicPlayer.Volume = 0.7f;
+                    //backgroundMusicPlayer.Play();
                     return;
                 }
             }
@@ -412,7 +475,7 @@ namespace WinFormsApp1
 
             }
 
-            if(game.Map.isMapShown == true) //OdczÛwam bÛl jak patrzÍ na to gÛwno....
+            if (game.Map.isMapShown == true) //OdczÛwam bÛl jak patrzÍ na to gÛwno....
             {
                 using (Image bigMap_img = Image.FromStream(new MemoryStream(game.Map.BigMap)))
                 {
@@ -433,7 +496,7 @@ namespace WinFormsApp1
                     int Xpostion = baseXposition + XCoordinate * 1910;
                     int Ypostion = baseYposition + YCoordinate * (-1000);
 
-                    if(player.Coordinates.Equals(w))
+                    if (player.Coordinates.Equals(w))
                     {
                         //int newWidth = Width - 500;
                         //int newHeight = Height - 200;
@@ -677,5 +740,54 @@ namespace WinFormsApp1
         {
 
         }
+
+
+        private void timerVoice_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                int index;
+                do
+                {
+                    // Losowanie indeksu pliku düwiÍkowego
+                    index = random.Next(soundFiles.Length);
+                } while (index == lastPlayedIndex); // Sprawdzenie, czy wybrany indeks nie jest rÛwny ostatnio odtwarzanemu
+
+                string soundFilePath = Path.Combine("..", "..", "..", "..", "sounds", "barczak", soundFiles[index]);
+
+                if (File.Exists(soundFilePath))
+                {
+                    if (otherMusicPlayer != null)
+                    {
+                        otherMusicPlayer.Stop();
+                        otherMusicPlayer.Dispose();
+                    }
+
+                    otherMusicReader = new AudioFileReader(soundFilePath);
+                    otherMusicPlayer = new WaveOutEvent();
+                    otherMusicPlayer.Init(otherMusicReader);
+                    otherMusicPlayer.Volume = 1f;
+                    otherMusicPlayer.Play();
+
+                    // Zapisanie ostatnio odtwarzanego indeksu
+                    lastPlayedIndex = index;
+                }
+                else
+                {
+                    MessageBox.Show($"Plik düwiÍkowy nie zosta≥ znaleziony: {soundFilePath}", "B≥πd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Wystπpi≥ nieoczekiwany b≥πd podczas odtwarzania düwiÍku: {ex.Message}", "B≥πd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Zmienna do przechowywania ostatnio odtwarzanego indeksu
+        private int lastPlayedIndex = -1;
+        private string[] soundFiles = { "portier.mp3", "zarabiac.mp3", "cholernie.mp3", "sbd.mp3", "boja sie.mp3", "mercedes.mp3", "myslimy.mp3", "wazna cecha.mp3", "cisza.mp3", "podchwytliwe pytanie.mp3", "po cholere.mp3" };
+        private Random random = new Random();
+
+
     }
 }

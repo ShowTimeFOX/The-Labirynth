@@ -71,9 +71,9 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            //Monster m01 = new Monster("Asriel", Path.Combine("..", "..", "..", "..", "img/asriel.png"), 20, 200, 20, 60);
-            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
-            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
+            Monster m01 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 20, 100, 10, 60);
+            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
+            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
 
             Wall[] wallsRoomX0Y2 = new Wall[]
             {
@@ -84,7 +84,8 @@ namespace GameLibrary
             };
 
             Monster m02 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 40, 100, 20, 30);
-            labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2, true, m02);
+            //labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2, true, m02);
+            labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2);
 
             Wall[] wallsRoomX0Y3 = new Wall[]
             {
@@ -95,7 +96,8 @@ namespace GameLibrary
             };
 
             Monster m03 = new Monster("Dogge", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
-            labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
+            //labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
+            labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3);
 
 
             Wall[] wallsRoomX0Y4 = new Wall[]
@@ -389,7 +391,9 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
-            labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5);
+            Monster m55 = new Monster("POTĘŻNY BAZODANOWIEC", Path.Combine("..", "..", "..", "..", "img/finalboss.png"), 200, 200, 30, 30);
+            labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5, true, m55);
+            //labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5);
         }
         public byte[] GetWall(EDirection viewDirection, EDirection playerDirection,int x, int y)
         {

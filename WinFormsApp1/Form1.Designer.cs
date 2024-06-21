@@ -53,6 +53,7 @@
             labelHpMonster = new Label();
             labelDamagePlayer = new Label();
             timerHitPointsPlayer = new System.Windows.Forms.Timer(components);
+            timerVoice = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)pictureBoxMonster).BeginInit();
             panelPlayerControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxHit).BeginInit();
@@ -100,7 +101,8 @@
             pictureBoxMonster.Location = new Point(202, 46);
             pictureBoxMonster.Margin = new Padding(3, 2, 3, 2);
             pictureBoxMonster.Name = "pictureBoxMonster";
-            pictureBoxMonster.Size = new Size(330, 340);
+            pictureBoxMonster.Size = new Size(800, 600);
+            pictureBoxMonster.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxMonster.TabIndex = 3;
             pictureBoxMonster.TabStop = false;
             // 
@@ -307,6 +309,11 @@
             timerHitPointsPlayer.Interval = 20;
             timerHitPointsPlayer.Tick += timerHitPointsPlayer_Tick;
             // 
+            // timerVoice
+            // 
+            timerVoice.Interval = 10000;
+            timerVoice.Tick += timerVoice_Tick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -314,9 +321,9 @@
             BackColor = SystemColors.ControlText;
             ClientSize = new Size(1540, 845);
             Controls.Add(labelDamagePlayer);
+            Controls.Add(labelDamage);
             Controls.Add(panelOverlay);
             Controls.Add(labelHpMonster);
-            Controls.Add(labelDamage);
             Controls.Add(hpBarMonster);
             Controls.Add(panelPlayerControls);
             Controls.Add(panelBackground);
@@ -370,5 +377,6 @@
         private Label labelHpMonster;
         private Label labelDamagePlayer;
         private System.Windows.Forms.Timer timerHitPointsPlayer;
+        private System.Windows.Forms.Timer timerVoice;
     }
 }
