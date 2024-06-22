@@ -44,9 +44,9 @@ namespace GameLibrary
             
 
             this.CreateLabyrynth();
-            //player.Coordinates = new Coordinates(0, 0);
             ////////////////ZMIENIC//////////////////////////////////////////////////////////////////////////////////////////
-            player.Coordinates = new Coordinates(4,5);
+            player.Coordinates = new Coordinates(0, 0);
+            //player.Coordinates = new Coordinates(4,5);
             player.Direction = EDirection.North;
         }
 
@@ -70,8 +70,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             Monster m01 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 20, 100, 10, 60);
-            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
-            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
+            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
+            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
 
             Wall[] wallsRoomX0Y2 = new Wall[]
             {
@@ -81,7 +81,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
 
-            Monster m02 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 40, 100, 20, 30);
+            Monster m02 = new Monster("Dogge", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 20, 100, 20, 30);
             //labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2, true, m02);
             labirynth[0, 2] = new Room(new Coordinates(0, 0), wallsRoomX0Y2);
 
@@ -330,7 +330,7 @@ namespace GameLibrary
             Wall[] wallsRoomX4Y5 = new Wall[]
             {
                 new Wall(EWallDirection.North, EWallType.Solid),
-                new Wall(EWallDirection.East, EWallType.Empty),
+                new Wall(EWallDirection.East, EWallType.Door), // TO JEST POTRZEBNE FABULARNIE (zamist solid)
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };

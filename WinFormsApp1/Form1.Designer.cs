@@ -316,7 +316,7 @@
             // 
             // timerVoice
             // 
-            timerVoice.Interval = 10000;
+            timerVoice.Interval = 6000;
             timerVoice.Tick += timerVoice_Tick;
             // 
             // richTextBox1

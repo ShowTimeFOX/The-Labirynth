@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TheLabirynth")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+05cf9b5a5b5c66785f577db2191ed673d344a203")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c16e18bc65d6cb9e3ce70267d8b98868acae3e3d")]
 [assembly: System.Reflection.AssemblyProductAttribute("TheLabirynth")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TheLabirynth")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

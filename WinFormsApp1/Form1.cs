@@ -316,17 +316,34 @@ namespace WinFormsApp1
                         stepSoundPlayer.Play();
 
                         // Sprawdzenie, czy gracz jest na koñcu labiryntu
-                        if (newX == 5 && newY == 5)
+                        if (player.Coordinates.XCoordinate == 5 && player.Coordinates.YCoordinate == 5)
                         {
+                            isFinalBoss = true;
                             labelDamagePlayer.BringToFront();
                             labelDamage.BringToFront();
                             Debug.WriteLine(":KONIEC");
+                            Invalidate();
+
+                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/try to open door.mp3"));
+                            otherMusicPlayer = new WaveOutEvent();
+                            otherMusicPlayer.Init(otherMusicReader);
+                            otherMusicPlayer.Volume = 1f;
+                            otherMusicPlayer.Play();
+                            Thread.Sleep(2000);
+                            //gdzie sie wybierasz
+                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/gdzie sie wybierasz.mp3"));
+                            otherMusicPlayer = new WaveOutEvent();
+                            otherMusicPlayer.Init(otherMusicReader);
+                            otherMusicPlayer.Volume = 1f;
+                            otherMusicPlayer.Play();
+                            Thread.Sleep(4000);
+
                             otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/sbd.mp3"));
                             otherMusicPlayer = new WaveOutEvent();
                             otherMusicPlayer.Init(otherMusicReader);
                             otherMusicPlayer.Volume = 1f;
                             otherMusicPlayer.Play();
-                            isFinalBoss = true;
+                            
                             timerVoice.Start();
                         }
                     }
@@ -408,7 +425,7 @@ namespace WinFormsApp1
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
+        private async void Form1_Paint(object sender, PaintEventArgs e)
         {
             int x = player.Coordinates.XCoordinate;
             int y = player.Coordinates.YCoordinate;
@@ -419,6 +436,7 @@ namespace WinFormsApp1
             {
                 if (game.Labirynth[x, y].HasMonster)
                 {
+                    
                     hpBarMonster.Maximum = game.Labirynth[x, y].Monster.HPMax;
                     hpBarMonster.Value = game.Labirynth[x, y].Monster.HPCurrent;
                     hpBarPlayer.Maximum = player.HPMax;
