@@ -285,155 +285,160 @@ namespace WinFormsApp1
                 return; // to tu MUSI byc
             }
 
-            if (e.KeyCode == Keys.W && !isFinalBoss)
+            if (enableWalk)
             {
-                //gdzie jestes?
-                //int x = player.Coordinates.XCoordinate;
-                //int y = player.Coordinates.YCoordinate;
-                //w ktor¹ strone patrzysz?
-                EDirection direction = player.Direction;
-                //czy œciana na ktora patrzysz nie jest solidna?
-
-                int width = game.Labirynth.GetLength(0); // Szerokoœæ tablicy
-                int height = game.Labirynth.GetLength(1); // Wysokoœæ tablicy
-
-                bool IsValidMove(int x, int y)
+                if (e.KeyCode == Keys.W && !isFinalBoss)
                 {
-                    if ((direction == EDirection.North && x == 2 && y == 2) || (direction == EDirection.South && x == 2 && y == 1))
-                    {
-                        var kluczyk = player.Inventory
-                            .Any(i => i.Name.Equals("kluczyk_zielony")); // NO I MAMY ZAPYTANIA LINQ ESSA
-                        return kluczyk;
-                    }
-                    else if ((direction == EDirection.North && x == 5 && y == 3) || (direction == EDirection.South && x == 5 && y == 2))
-                    {
-                        var kluczyk = player.Inventory
-                            .Any(i => i.Name.Equals("kluczyk_zolty"));
-                        return kluczyk;
-                    }
-                    else if ((direction == EDirection.North && x == 1 && y == 3) || (direction == EDirection.South && x == 1 && y == 2))
-                    {
-                        var kluczyk = player.Inventory
-                            .Any(i => i.Name.Equals("kluczyk_czerwony"));
-                        return kluczyk;
-                    }
-                    else if ((direction == EDirection.West && x == 1 && y == 4) || (direction == EDirection.East && x == 2 && y == 4))
-                    {
-                        var kluczyk = player.Inventory
-                            .Any(i => i.Name.Equals("kluczyk_niebieski"));
-                        return kluczyk;
-                    }
-                    return x >= 0 && x < width && y >= 0 && y < height;
-                }
+                    //gdzie jestes?
+                    //int x = player.Coordinates.XCoordinate;
+                    //int y = player.Coordinates.YCoordinate;
+                    //w ktor¹ strone patrzysz?
+                    EDirection direction = player.Direction;
+                    //czy œciana na ktora patrzysz nie jest solidna?
 
+                    int width = game.Labirynth.GetLength(0); // Szerokoœæ tablicy
+                    int height = game.Labirynth.GetLength(1); // Wysokoœæ tablicy
 
-                void MovePlayer(int newX, int newY)
-                {
-                    if (IsValidMove(newX, newY))
+                    bool IsValidMove(int x, int y)
                     {
-                        player.Coordinates.XCoordinate = newX;
-                        player.Coordinates.YCoordinate = newY;
-
-                        if (!game.Map.discoveredMapCoordinates.Contains(new Coordinates(newX, newY)))
+                        if ((direction == EDirection.North && x == 2 && y == 2) || (direction == EDirection.South && x == 2 && y == 1))
                         {
-                            game.Map.discoveredMapCoordinates.Add(new Coordinates(newX, newY));
+                            var kluczyk = player.Inventory
+                                .Any(i => i.Name.Equals("kluczyk_zielony")); // NO I MAMY ZAPYTANIA LINQ ESSA
+                            return kluczyk;
                         }
-                        // Odtwarzanie dŸwiêku kroku
-                        stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/walk_cutted.mp3"));
-                        stepSoundPlayer = new WaveOutEvent();
-                        stepSoundPlayer.Init(stepSoundReader);
-                        stepSoundReader.Position = 0;
-                        stepSoundPlayer.Play();
-
-                        // Sprawdzenie, czy gracz jest na koñcu labiryntu
-                        if (player.Coordinates.XCoordinate == 5 && player.Coordinates.YCoordinate == 5)
+                        else if ((direction == EDirection.North && x == 5 && y == 3) || (direction == EDirection.South && x == 5 && y == 2))
                         {
-                            isFinalBoss = true;
-                            labelDamagePlayer.BringToFront();
-                            labelDamage.BringToFront();
-                            Debug.WriteLine(":KONIEC");
-                            Invalidate();
+                            var kluczyk = player.Inventory
+                                .Any(i => i.Name.Equals("kluczyk_zolty"));
+                            return kluczyk;
+                        }
+                        else if ((direction == EDirection.North && x == 1 && y == 3) || (direction == EDirection.South && x == 1 && y == 2))
+                        {
+                            var kluczyk = player.Inventory
+                                .Any(i => i.Name.Equals("kluczyk_czerwony"));
+                            return kluczyk;
+                        }
+                        else if ((direction == EDirection.West && x == 1 && y == 4) || (direction == EDirection.East && x == 2 && y == 4))
+                        {
+                            var kluczyk = player.Inventory
+                                .Any(i => i.Name.Equals("kluczyk_niebieski"));
+                            return kluczyk;
+                        }
+                        return x >= 0 && x < width && y >= 0 && y < height;
+                    }
 
-                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/try to open door.mp3"));
-                            otherMusicPlayer = new WaveOutEvent();
-                            otherMusicPlayer.Init(otherMusicReader);
-                            otherMusicPlayer.Volume = 1f;
-                            otherMusicPlayer.Play();
-                            Thread.Sleep(2000);
-                            //gdzie sie wybierasz
-                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/gdzie sie wybierasz.mp3"));
-                            otherMusicPlayer = new WaveOutEvent();
-                            otherMusicPlayer.Init(otherMusicReader);
-                            otherMusicPlayer.Volume = 1f;
-                            otherMusicPlayer.Play();
-                            Thread.Sleep(4000);
 
-                            otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/sbd.mp3"));
-                            otherMusicPlayer = new WaveOutEvent();
-                            otherMusicPlayer.Init(otherMusicReader);
-                            otherMusicPlayer.Volume = 1f;
-                            otherMusicPlayer.Play();
+                    void MovePlayer(int newX, int newY)
+                    {
+                        if (IsValidMove(newX, newY))
+                        {
+                            player.Coordinates.XCoordinate = newX;
+                            player.Coordinates.YCoordinate = newY;
 
-                            timerVoice.Start();
+                            if (!game.Map.discoveredMapCoordinates.Contains(new Coordinates(newX, newY)))
+                            {
+                                game.Map.discoveredMapCoordinates.Add(new Coordinates(newX, newY));
+                            }
+                            // Odtwarzanie dŸwiêku kroku
+                            stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/walk_cutted.mp3"));
+                            stepSoundPlayer = new WaveOutEvent();
+                            stepSoundPlayer.Init(stepSoundReader);
+                            stepSoundReader.Position = 0;
+                            stepSoundPlayer.Play();
+
+                            // Sprawdzenie, czy gracz jest na koñcu labiryntu
+                            if (player.Coordinates.XCoordinate == 5 && player.Coordinates.YCoordinate == 5)
+                            {
+                                isFinalBoss = true;
+                                labelDamagePlayer.BringToFront();
+                                labelDamage.BringToFront();
+                                Debug.WriteLine(":KONIEC");
+                                Invalidate();
+
+                                otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/try to open door.mp3"));
+                                otherMusicPlayer = new WaveOutEvent();
+                                otherMusicPlayer.Init(otherMusicReader);
+                                otherMusicPlayer.Volume = 1f;
+                                otherMusicPlayer.Play();
+                                Thread.Sleep(2000);
+                                //gdzie sie wybierasz
+                                otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/gdzie sie wybierasz.mp3"));
+                                otherMusicPlayer = new WaveOutEvent();
+                                otherMusicPlayer.Init(otherMusicReader);
+                                otherMusicPlayer.Volume = 1f;
+                                otherMusicPlayer.Play();
+                                Thread.Sleep(4000);
+
+                                otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/sbd.mp3"));
+                                otherMusicPlayer = new WaveOutEvent();
+                                otherMusicPlayer.Init(otherMusicReader);
+                                otherMusicPlayer.Volume = 1f;
+                                otherMusicPlayer.Play();
+
+                                timerVoice.Start();
+                            }
+                        }
+                        else
+                        {
+                            //nie mozna isc
+                            // Odtwarzanie dŸwiêku kroku
+                            stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/try to open door.mp3"));
+                            stepSoundPlayer = new WaveOutEvent();
+                            stepSoundPlayer.Volume = .5f;
+                            stepSoundPlayer.Init(stepSoundReader);
+                            stepSoundReader.Position = 0;
+                            stepSoundPlayer.Play();
                         }
                     }
-                    else
+
+                    if (game.Labirynth[x, y].Walls[(int)direction].WallType != EWallType.Solid)
                     {
-                        //nie mozna isc
-                        // Odtwarzanie dŸwiêku kroku
-                        stepSoundReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/try to open door.mp3"));
-                        stepSoundPlayer = new WaveOutEvent();
-                        stepSoundPlayer.Volume = .5f;
-                        stepSoundPlayer.Init(stepSoundReader);
-                        stepSoundReader.Position = 0;
-                        stepSoundPlayer.Play();
+                        int newX = player.Coordinates.XCoordinate;
+                        int newY = player.Coordinates.YCoordinate;
+
+                        switch (direction)
+                        {
+                            case EDirection.North:
+                                newY += 1;
+                                break;
+                            case EDirection.East:
+                                newX += 1;
+                                break;
+                            case EDirection.South:
+                                newY -= 1;
+                                break;
+                            case EDirection.West:
+                                newX -= 1;
+                                break;
+                        }
+
+                        MovePlayer(newX, newY);
+
+
+
+                        // Rysowanie pokoju
+                        Invalidate();
                     }
+
                 }
-
-                if (game.Labirynth[x, y].Walls[(int)direction].WallType != EWallType.Solid)
+                if (e.KeyCode == Keys.D) //odwrócenie gracza w prawo
                 {
-                    int newX = player.Coordinates.XCoordinate;
-                    int newY = player.Coordinates.YCoordinate;
+                    player.Direction = EnumExtensions.Next(player.Direction);
 
-                    switch (direction)
-                    {
-                        case EDirection.North:
-                            newY += 1;
-                            break;
-                        case EDirection.East:
-                            newX += 1;
-                            break;
-                        case EDirection.South:
-                            newY -= 1;
-                            break;
-                        case EDirection.West:
-                            newX -= 1;
-                            break;
-                    }
-
-                    MovePlayer(newX, newY);
-
-
-
-                    // Rysowanie pokoju
                     Invalidate();
                 }
-
-            }
-            if (e.KeyCode == Keys.D) //odwrócenie gracza w prawo
-            {
-                player.Direction = EnumExtensions.Next(player.Direction);
-
-                Invalidate();
-            }
-            if (e.KeyCode == Keys.A) //odwrócenie gracza w lewo
-            {
-                player.Direction = EnumExtensions.Previous(player.Direction);
-                Invalidate();
+                if (e.KeyCode == Keys.A) //odwrócenie gracza w lewo
+                {
+                    player.Direction = EnumExtensions.Previous(player.Direction);
+                    Invalidate();
+                }
             }
             if (e.KeyCode == Keys.M)
             {
                 game.Map.isMapShown = !game.Map.isMapShown; //To po prostu jeœli nie ma mapy poka¿, jak jest to nie pokazuj
+                if (game.Map.isMapShown) enableWalk = false;
+                else enableWalk = true;
                 Invalidate();
             }
 
@@ -457,7 +462,7 @@ namespace WinFormsApp1
                 otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/key-get.mp3"));
                 otherMusicPlayer = new WaveOutEvent();
                 otherMusicPlayer.Init(otherMusicReader);
-                otherMusicPlayer.Volume = 1f;
+                otherMusicPlayer.Volume = .7f;
                 otherMusicPlayer.Play();
                 player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
                 game.Labirynth[x, y].item = null;
