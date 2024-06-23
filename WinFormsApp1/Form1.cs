@@ -189,10 +189,12 @@ namespace WinFormsApp1
 
                     // Oblicz znormalizowan¹ odleg³oœæ
                     double normalizedDistance = (double)distanceFromCenter / maxDistance * 100;
-
                     // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
                     int damage2 = Math.Max(100 - (int)normalizedDistance, 0);
-                    damage = (player.Strength + damage2) / 10;
+                    // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
+                    // Wartoœæ obra¿eñ uwzglêdniaj¹ca wiêkszy wp³yw si³y gracza
+                    double strengthMultiplier = 1.5; // Mo¿esz dostosowaæ ten wspó³czynnik, aby si³a mia³a wiêksze znaczenie
+                    int damage = (int)((player.Strength * strengthMultiplier + damage2) / 3);
                     //Debug.WriteLine($"DAMAGE: {damage}");
 
                     labelDamage.Text = $"-{damage}";
@@ -237,6 +239,7 @@ namespace WinFormsApp1
                             //ZAKOÑCZENIE
                             //obs³uga zakoñczenia
                             //ciemne t³o
+                            labelKomunikat.Visible = false;
                             timerBossMotion.Stop();
                             panelBackground.Visible = true;
                             pictureBoxMonster.Image = null;
@@ -851,7 +854,7 @@ namespace WinFormsApp1
 
             if(itemHealthCount > 0 || player.HPCurrent == player.HPMax) 
             {
-                if ((player.HPCurrent + 20) <= player.HPMax) player.HPCurrent += 20; //TUTAJ ODBYWA SIÊ LECZENIE
+                if ((player.HPCurrent + 20) <= player.HPMax) player.HPCurrent += 30; //TUTAJ ODBYWA SIÊ LECZENIE
                 else player.HPCurrent = player.HPMax;
                 ItemHealth itemToRemove = player.Inventory.OfType<ItemHealth>().FirstOrDefault();
                 player.Inventory.Remove(itemToRemove);

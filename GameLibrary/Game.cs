@@ -363,7 +363,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             //labirynth[4, 3] = new Room(new Coordinates(0, 0), wallsRoomX4Y3);
-            Monster m43 = new Monster("kotek", Path.Combine("..", "..", "..", "..", "img/bossCat.png"), 150, 150, 15, 30);
+            Monster m43 = new Monster("kotek", Path.Combine("..", "..", "..", "..", "img/bossCat.png"), 100, 100, 15, 30);
             labirynth[4, 3] = new Room(new Coordinates(0, 0), wallsRoomX4Y3,true,m43);
 
             Wall[] wallsRoomX4Y4 = new Wall[]
@@ -450,7 +450,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
-            Monster m55 = new Monster("POTĘŻNY BAZODANOWIEC", Path.Combine("..", "..", "..", "..", "img/finalboss.png"), 30, 200, 30, 30);
+            Monster m55 = new Monster("POTĘŻNY BAZODANOWIEC", Path.Combine("..", "..", "..", "..", "img/finalboss.png"), 500, 500, 30, 30);
             labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5, true, m55);
             //labirynth[5, 5] = new Room(new Coordinates(0, 0), wallsRoomX5Y5);
         }
