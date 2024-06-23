@@ -117,8 +117,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
 
-            Monster m03 = new Monster("Dogge", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
-            //labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
+           
             labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3);
             Item kluczyk_czerwony = new ItemLock("kluczyk_czerwony", imageCache["red_key.png"],EDirection.North, EDirection.West);
             labirynth[0, 3].item = kluczyk_czerwony;
@@ -174,6 +173,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
+            
             labirynth[1, 2] = new Room(new Coordinates(0, 0), wallsRoomX1Y2);
             Item kluczyk_zielony = new ItemLock("kluczyk_zielony", imageCache["green_key.png"], EDirection.North, EDirection.West);
             labirynth[1, 2].item = kluczyk_zielony;
@@ -231,6 +231,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.GreenDoor),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
+            
             labirynth[2, 2] = new Room(new Coordinates(0, 0), wallsRoomX2Y2);
             Monster m22 = new Monster("Gru", Path.Combine("..", "..", "..", "..", "img/bossGru.png"), 150, 150, 20, 30);
             labirynth[2, 2] = new Room(new Coordinates(0, 0), wallsRoomX2Y2,true, m22);
@@ -291,7 +292,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[3, 2] = new Room(new Coordinates(0, 0), wallsRoomX3Y2);
-            Item noz1 = new ItemLock("kluczyk_zielony", imageCache["knife.png"], EDirection.South, EDirection.East);
+            Item noz1 = new ItemDamage("noz1", imageCache["knife.png"], EDirection.South, EDirection.East);
             labirynth[3, 2].item = noz1;
 
             Wall[] wallsRoomX3Y3 = new Wall[]
@@ -426,7 +427,10 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.YellowDoor),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
-            labirynth[5, 3] = new Room(new Coordinates(0, 0), wallsRoomX5Y3);
+            Monster m03 = new Monster("Dogge", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
+            //labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
+            labirynth[5, 3] = new Room(new Coordinates(0, 0), wallsRoomX5Y3,true,m03);
+
 
             Wall[] wallsRoomX5Y4 = new Wall[]
             {

@@ -57,6 +57,8 @@
             richTextBox1 = new RichTextBox();
             timerScroll = new System.Windows.Forms.Timer(components);
             labelEndText = new Label();
+            imageList1 = new ImageList(components);
+            labelKomunikat = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBoxMonster).BeginInit();
             panelPlayerControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxHit).BeginInit();
@@ -355,12 +357,31 @@
             labelEndText.TextAlign = ContentAlignment.TopCenter;
             labelEndText.Visible = false;
             // 
+            // imageList1
+            // 
+            imageList1.ColorDepth = ColorDepth.Depth8Bit;
+            imageList1.ImageSize = new Size(16, 16);
+            imageList1.TransparentColor = Color.Transparent;
+            // 
+            // labelKomunikat
+            // 
+            labelKomunikat.AutoSize = true;
+            labelKomunikat.BackColor = Color.Black;
+            labelKomunikat.Font = new Font("Segoe UI", 30F, FontStyle.Regular, GraphicsUnit.Point);
+            labelKomunikat.ForeColor = Color.White;
+            labelKomunikat.Location = new Point(0, 1000);
+            labelKomunikat.Name = "labelKomunikat";
+            labelKomunikat.Size = new Size(130, 54);
+            labelKomunikat.TabIndex = 16;
+            labelKomunikat.Text = "label4";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlText;
             ClientSize = new Size(1540, 845);
+            Controls.Add(labelKomunikat);
             Controls.Add(labelEndText);
             Controls.Add(richTextBox1);
             Controls.Add(labelDamagePlayer);
@@ -424,5 +445,7 @@
         private RichTextBox richTextBox1;
         private System.Windows.Forms.Timer timerScroll;
         private Label labelEndText;
+        private ImageList imageList1;
+        private Label labelKomunikat;
     }
 }
