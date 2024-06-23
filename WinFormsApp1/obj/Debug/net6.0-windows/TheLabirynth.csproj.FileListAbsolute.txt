@@ -96,3 +96,11 @@ C:\Users\User\Documents\GitHub\The-Labirynth\WinFormsApp1\bin\Debug\net6.0-windo
 C:\Users\User\Documents\GitHub\The-Labirynth\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.WinForms.dll
 C:\Users\User\Documents\GitHub\The-Labirynth\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.WinMM.dll
 C:\Users\User\Documents\GitHub\The-Labirynth\WinFormsApp1\obj\Debug\net6.0-windows\TheLabirynth.Properties.Resources.resources
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.Asio.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.Core.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.Midi.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.Wasapi.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.WinForms.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\bin\Debug\net6.0-windows\NAudio.WinMM.dll
+C:\Users\User\Desktop\The-Labirynth-main\WinFormsApp1\obj\Debug\net6.0-windows\TheLabirynth.Properties.Resources.resources

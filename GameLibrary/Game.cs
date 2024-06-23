@@ -38,10 +38,32 @@ namespace GameLibrary
             imageCache["wall_west_empty"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_empty.png"));
             imageCache["wall_west_solid"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_solid.png"));
             imageCache["floor.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "floor.png"));
+
+            imageCache["red_key.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "red_key.png"));
+            imageCache["green_key.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "green_key.png"));
+            imageCache["blue_key.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "blue_key.png"));
+            imageCache["yellow_key.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "yellow_key.png"));
+            imageCache["hp.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "hp.png"));
+            imageCache["knife.png"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "knife.png"));
+
+            imageCache["wall_east_door_blue"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_door_blue.png"));
+            imageCache["wall_east_door_gold"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_door_gold.png"));
+            imageCache["wall_east_door_green"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_door_green.png"));
+            imageCache["wall_east_door_red"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_east_door_red.png"));
+
+            imageCache["wall_north_door_blue"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_door_blue.png"));
+            imageCache["wall_north_door_gold"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_door_gold.png"));
+            imageCache["wall_north_door_green"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_door_green.png"));
+            imageCache["wall_north_door_red"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_north_door_red.png"));
+
+            imageCache["wall_west_door_blue"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_door_blue.png"));
+            imageCache["wall_west_door_gold"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_door_gold.png"));
+            imageCache["wall_west_door_green"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_door_green.png"));
+            imageCache["wall_west_door_red"] = File.ReadAllBytes(Path.Combine(ImageDirectory, "wall_west_door_red.png"));
             //potwory
 
             //itemy
-            
+
 
             this.CreateLabyrynth();
             ////////////////ZMIENIC//////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +83,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             labirynth[0, 0] = new Room(new Coordinates(0, 0), wallsRoomX0Y0);
+            
+
 
             Wall[] wallsRoomX0Y1 = new Wall[]
             {
@@ -69,9 +93,9 @@ namespace GameLibrary
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
-            Monster m01 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 20, 100, 10, 60);
-            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
-            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
+            //Monster m01 = new Monster("Pepe", Path.Combine("..", "..", "..", "..", "img/pepe.png"), 20, 100, 10, 60);
+            //labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1, true, m01);
+            labirynth[0, 1] = new Room(new Coordinates(0, 0), wallsRoomX0Y1);
 
             Wall[] wallsRoomX0Y2 = new Wall[]
             {
@@ -96,6 +120,8 @@ namespace GameLibrary
             Monster m03 = new Monster("Dogge", Path.Combine("..", "..", "..", "..", "img/dogge.png"), 80, 100, 30, 30);
             //labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3, true, m03);
             labirynth[0, 3] = new Room(new Coordinates(0, 0), wallsRoomX0Y3);
+            Item kluczyk_czerwony = new ItemLock("kluczyk_czerwony", imageCache["red_key.png"],EDirection.North, EDirection.West);
+            labirynth[0, 3].item = kluczyk_czerwony;
 
 
             Wall[] wallsRoomX0Y4 = new Wall[]
@@ -137,18 +163,20 @@ namespace GameLibrary
 
             Wall[] wallsRoomX1Y2 = new Wall[]
             {
-                new Wall(EWallDirection.North, EWallType.Door),
+                new Wall(EWallDirection.North, EWallType.RedDoor),
                 new Wall(EWallDirection.East, EWallType.Solid),
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[1, 2] = new Room(new Coordinates(0, 0), wallsRoomX1Y2);
+            Item kluczyk_zielony = new ItemLock("kluczyk_zielony", imageCache["green_key.png"], EDirection.North, EDirection.West);
+            labirynth[1, 2].item = kluczyk_zielony;
 
             Wall[] wallsRoomX1Y3 = new Wall[]
             {
                 new Wall(EWallDirection.North, EWallType.Solid),
                 new Wall(EWallDirection.East, EWallType.Empty),
-                new Wall(EWallDirection.South, EWallType.Door),
+                new Wall(EWallDirection.South, EWallType.RedDoor),
                 new Wall(EWallDirection.West, EWallType.Door)
             };
             labirynth[1, 3] = new Room(new Coordinates(0, 0), wallsRoomX1Y3);
@@ -156,7 +184,7 @@ namespace GameLibrary
             Wall[] wallsRoomX1Y4 = new Wall[]
             {
                 new Wall(EWallDirection.North, EWallType.Solid),
-                new Wall(EWallDirection.East, EWallType.Door),
+                new Wall(EWallDirection.East, EWallType.BlueDoor),
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
@@ -183,7 +211,7 @@ namespace GameLibrary
 
             Wall[] wallsRoomX2Y1 = new Wall[]
             {
-                new Wall(EWallDirection.North, EWallType.Door),
+                new Wall(EWallDirection.North, EWallType.GreenDoor),
                 new Wall(EWallDirection.East, EWallType.Solid),
                 new Wall(EWallDirection.South, EWallType.Door),
                 new Wall(EWallDirection.West, EWallType.Empty)
@@ -194,7 +222,7 @@ namespace GameLibrary
             {
                 new Wall(EWallDirection.North, EWallType.Solid),
                 new Wall(EWallDirection.East, EWallType.Empty),
-                new Wall(EWallDirection.South, EWallType.Door),
+                new Wall(EWallDirection.South, EWallType.GreenDoor),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             labirynth[2, 2] = new Room(new Coordinates(0, 0), wallsRoomX2Y2);
@@ -213,7 +241,7 @@ namespace GameLibrary
                 new Wall(EWallDirection.North, EWallType.Solid),
                 new Wall(EWallDirection.East, EWallType.Solid),
                 new Wall(EWallDirection.South, EWallType.Empty),
-                new Wall(EWallDirection.West, EWallType.Door)
+                new Wall(EWallDirection.West, EWallType.BlueDoor)
             };
             labirynth[2, 4] = new Room(new Coordinates(0, 0), wallsRoomX2Y4);
 
@@ -229,18 +257,20 @@ namespace GameLibrary
             //ROW 3
             Wall[] wallsRoomX3Y0 = new Wall[]
             {
-                new Wall(EWallDirection.North, EWallType.Door),
+                new Wall(EWallDirection.North, EWallType.Solid),
                 new Wall(EWallDirection.East, EWallType.Solid),
                 new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[3, 0] = new Room(new Coordinates(0, 0), wallsRoomX3Y0);
+            Item apteczka1 = new ItemHealth("apteczka", imageCache["hp.png"],20, EDirection.East, EDirection.North);
+            labirynth[3, 0].item = apteczka1;
 
             Wall[] wallsRoomX3Y1 = new Wall[]
             {
                 new Wall(EWallDirection.North, EWallType.Empty),
                 new Wall(EWallDirection.East, EWallType.Empty),
-                new Wall(EWallDirection.South, EWallType.Door),
+                new Wall(EWallDirection.South, EWallType.Solid),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             labirynth[3, 1] = new Room(new Coordinates(0, 0), wallsRoomX3Y1);
@@ -253,6 +283,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[3, 2] = new Room(new Coordinates(0, 0), wallsRoomX3Y2);
+            Item noz1 = new ItemLock("kluczyk_zielony", imageCache["knife.png"], EDirection.South, EDirection.East);
+            labirynth[3, 2].item = noz1;
 
             Wall[] wallsRoomX3Y3 = new Wall[]
             {
@@ -263,6 +295,7 @@ namespace GameLibrary
             };
             labirynth[3, 3] = new Room(new Coordinates(0, 0), wallsRoomX3Y3);
 
+
             Wall[] wallsRoomX3Y4 = new Wall[]
             {
                 new Wall(EWallDirection.North, EWallType.Door),
@@ -271,6 +304,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             labirynth[3, 4] = new Room(new Coordinates(0, 0), wallsRoomX3Y4);
+            Item apteczka3 = new ItemHealth("apteczka", imageCache["hp.png"], 40, EDirection.East, EDirection.North);
+            labirynth[3, 4].item = apteczka3;
 
             Wall[] wallsRoomX3Y5 = new Wall[]
             {
@@ -326,6 +361,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[4, 4] = new Room(new Coordinates(0, 0), wallsRoomX4Y4);
+            Item noz2 = new ItemLock("kluczyk_zielony", imageCache["knife.png"], EDirection.North, EDirection.West);
+            labirynth[4, 4].item = noz2;
 
             Wall[] wallsRoomX4Y5 = new Wall[]
             {
@@ -345,6 +382,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[5, 0] = new Room(new Coordinates(0, 0), wallsRoomX5Y0);
+            Item kluczyk_zolty = new ItemLock("kluczyk_zolty", imageCache["yellow_key.png"], EDirection.North, EDirection.West);
+            labirynth[5, 0].item = kluczyk_zolty;
 
             Wall[] wallsRoomX5Y1 = new Wall[]
             {
@@ -357,18 +396,20 @@ namespace GameLibrary
 
             Wall[] wallsRoomX5Y2 = new Wall[]
             {
-                new Wall(EWallDirection.North, EWallType.Door),
+                new Wall(EWallDirection.North, EWallType.YellowDoor),
                 new Wall(EWallDirection.East, EWallType.Solid),
                 new Wall(EWallDirection.South, EWallType.Empty),
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             labirynth[5, 2] = new Room(new Coordinates(0, 0), wallsRoomX5Y2);
+            Item apteczka2 = new ItemHealth("apteczka", imageCache["hp.png"], 40, EDirection.East, EDirection.North);
+            labirynth[5, 2].item = apteczka2;
 
             Wall[] wallsRoomX5Y3 = new Wall[]
             {
                 new Wall(EWallDirection.North, EWallType.Door),
                 new Wall(EWallDirection.East, EWallType.Solid),
-                new Wall(EWallDirection.South, EWallType.Door),
+                new Wall(EWallDirection.South, EWallType.YellowDoor),
                 new Wall(EWallDirection.West, EWallType.Empty)
             };
             labirynth[5, 3] = new Room(new Coordinates(0, 0), wallsRoomX5Y3);
@@ -381,6 +422,8 @@ namespace GameLibrary
                 new Wall(EWallDirection.West, EWallType.Solid)
             };
             labirynth[5, 4] = new Room(new Coordinates(0, 0), wallsRoomX5Y4);
+            Item kluczyk_niebieski = new ItemLock("kluczyk_niebieski", imageCache["blue_key.png"], EDirection.North, EDirection.West);
+            labirynth[5, 4].item = kluczyk_niebieski;
 
             Wall[] wallsRoomX5Y5 = new Wall[]
             {
@@ -409,6 +452,19 @@ namespace GameLibrary
                 case EWallType.Door:
                     ImageToReturn = GetDoorImage(viewDirection);
                     return ImageToReturn;
+                case EWallType.GreenDoor:
+                    ImageToReturn = GetGreenDoorImage(viewDirection);
+                    return ImageToReturn;
+                case EWallType.BlueDoor:
+                    ImageToReturn = GetBlueDoorImage(viewDirection);
+                    return ImageToReturn;
+                case EWallType.RedDoor:
+                    ImageToReturn = GetRedDoorImage(viewDirection);
+                    return ImageToReturn;
+                case EWallType.YellowDoor:
+                    ImageToReturn = GetYellowDoorImage(viewDirection);
+                    return ImageToReturn;
+
                 default: return ImageToReturn;
             }
             
@@ -483,5 +539,87 @@ namespace GameLibrary
             }
             return imageCache[imageName];
         }
+        private byte[] GetGreenDoorImage(EDirection direction)
+        {
+            string imageName = null;
+            switch (direction)
+            {
+                case EDirection.North:
+                    imageName = "wall_north_door_green";
+                    break;
+                case EDirection.East:
+                    imageName = "wall_east_door_green";
+                    break;
+                case EDirection.South:
+                    imageName = "wall_north_door_green";
+                    break;
+                case EDirection.West:
+                    imageName = "wall_west_door_green";
+                    break;
+            }
+            return imageCache[imageName];
+        }
+        private byte[] GetBlueDoorImage(EDirection direction)
+        {
+            string imageName = null;
+            switch (direction)
+            {
+                case EDirection.North:
+                    imageName = "wall_north_door_blue";
+                    break;
+                case EDirection.East:
+                    imageName = "wall_east_door_blue";
+                    break;
+                case EDirection.South:
+                    imageName = "wall_north_door_blue";
+                    break;
+                case EDirection.West:
+                    imageName = "wall_west_door_blue";
+                    break;
+            }
+            return imageCache[imageName];
+        }
+        private byte[] GetRedDoorImage(EDirection direction)
+        {
+            string imageName = null;
+            switch (direction)
+            {
+                case EDirection.North:
+                    imageName = "wall_north_door_red";
+                    break;
+                case EDirection.East:
+                    imageName = "wall_east_door_red";
+                    break;
+                case EDirection.South:
+                    imageName = "wall_north_door_red";
+                    break;
+                case EDirection.West:
+                    imageName = "wall_west_door_red";
+                    break;
+            }
+            return imageCache[imageName];
+        }
+        private byte[] GetYellowDoorImage(EDirection direction)
+        {
+            string imageName = null;
+            switch (direction)
+            {
+                case EDirection.North:
+                    imageName = "wall_north_door_gold";
+                    break;
+                case EDirection.East:
+                    imageName = "wall_east_door_gold";
+                    break;
+                case EDirection.South:
+                    imageName = "wall_north_door_gold";
+                    break;
+                case EDirection.West:
+                    imageName = "wall_west_door_gold";
+                    break;
+            }
+            return imageCache[imageName];
+        }
+
+
     }
 }

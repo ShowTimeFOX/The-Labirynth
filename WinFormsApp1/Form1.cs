@@ -1,4 +1,5 @@
 using GameLibrary;
+using Microsoft.VisualBasic.Devices;
 using NAudio.Dmo;
 using NAudio.Wave;
 using System;
@@ -31,6 +32,7 @@ namespace WinFormsApp1
         private Monster monster;
         private Image compassPointerImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
         private Image originalCompassImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
+        private Rectangle imageRectangle;
 
         int xPosition = 50;
         int yPosition = 50;
@@ -40,6 +42,8 @@ namespace WinFormsApp1
         int amplitudeY = 50; // Amplituda ósemki w pionie
         double angle = 0; // K¹t do obliczania pozycji
         double angleStep = 0.1; // Krok zmiany k¹ta dla prêdkoœci ruchu
+        int mouseX = 0;
+        int mouseY = 0;
 
         bool enableWalk = true;
         bool setMonster = false;
@@ -65,6 +69,7 @@ namespace WinFormsApp1
         {
             player = new Player("Dzban", null, 100, 100, 30, 20);
             game = new Game(player);
+            this.MouseClick += Form1_MouseClick;
             InitializeComponent();
         }
 
@@ -243,11 +248,11 @@ namespace WinFormsApp1
                             richTextBox1.Location = new Point(200, 0);
 
                             //this.AutoScroll = true;
-                            richTextBox1.Size = new Size(Width-400, Height);
+                            richTextBox1.Size = new Size(Width - 400, Height);
                             timerScroll.Start();
                             richTextBox1.LoadFile(Path.Combine("..", "..", "..", "..", "img/zakonczenie.rtf"));
-                            richTextBox1.Scale(new SizeF(2,2));
-                            
+                            richTextBox1.Scale(new SizeF(2, 2));
+
                             //labelEndText.Visible = true;
                             labelEndText.BringToFront();
                             labelEndText.Location = new Point(0, 0);
@@ -294,8 +299,33 @@ namespace WinFormsApp1
 
                 bool IsValidMove(int x, int y)
                 {
+                    if ((direction == EDirection.North && x == 2 && y == 2) || (direction == EDirection.South && x == 2 && y == 1))
+                    {
+                        var kluczyk = player.Inventory
+                            .Any(i => i.Name.Equals("kluczyk_zielony")); // NO I MAMY ZAPYTANIA LINQ ESSA
+                        return kluczyk;
+                    }
+                    else if ((direction == EDirection.North && x == 5 && y == 3) || (direction == EDirection.South && x == 5 && y == 2))
+                    {
+                        var kluczyk = player.Inventory
+                            .Any(i => i.Name.Equals("kluczyk_zolty"));
+                        return kluczyk;
+                    }
+                    else if ((direction == EDirection.North && x == 1 && y == 3) || (direction == EDirection.South && x == 1 && y == 2))
+                    {
+                        var kluczyk = player.Inventory
+                            .Any(i => i.Name.Equals("kluczyk_czerwony"));
+                        return kluczyk;
+                    }
+                    else if ((direction == EDirection.West && x == 1 && y == 4) || (direction == EDirection.East && x == 2 && y == 4))
+                    {
+                        var kluczyk = player.Inventory
+                            .Any(i => i.Name.Equals("kluczyk_niebieski"));
+                        return kluczyk;
+                    }
                     return x >= 0 && x < width && y >= 0 && y < height;
                 }
+
 
                 void MovePlayer(int newX, int newY)
                 {
@@ -343,7 +373,7 @@ namespace WinFormsApp1
                             otherMusicPlayer.Init(otherMusicReader);
                             otherMusicPlayer.Volume = 1f;
                             otherMusicPlayer.Play();
-                            
+
                             timerVoice.Start();
                         }
                     }
@@ -410,6 +440,30 @@ namespace WinFormsApp1
 
         }
 
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            // Pobierz wspó³rzêdne klikniêcia mysz¹
+            mouseX = e.X;
+            mouseY = e.Y;
+            Debug.WriteLine(mouseX);
+            Debug.WriteLine(mouseY);
+
+            // Sprawdzenie klikniêcia
+            Point clickPoint = new Point(mouseX, mouseY); // mouseX i mouseY to wspó³rzêdne klikniêcia
+            int x = player.Coordinates.XCoordinate;
+            int y = player.Coordinates.YCoordinate;
+            if (imageRectangle.Contains(clickPoint) && game.Labirynth[x, y].item != null)
+            {
+                otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/key-get.mp3"));
+                otherMusicPlayer = new WaveOutEvent();
+                otherMusicPlayer.Init(otherMusicReader);
+                otherMusicPlayer.Volume = 1f;
+                otherMusicPlayer.Play();
+                player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
+                game.Labirynth[x, y].item = null;
+                Invalidate();
+            }
+        }
         private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             e.IsInputKey = true;
@@ -425,6 +479,130 @@ namespace WinFormsApp1
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+
+        //MOJE METODY UPOŒLEDZONE DO RYSOWANIA ITEMÓW
+
+        private void RysujKluczNaPod³odzePoLewej(Graphics g,EDirection polozenie1, EDirection polozenie2)
+        {
+            byte[] imageData = game.Labirynth[player.Coordinates.XCoordinate, player.Coordinates.YCoordinate].item.daneZdjecia;
+            int width = Width / 16;
+            int height = Height / 16;
+
+            using (Image key = Image.FromStream(new MemoryStream(imageData)))
+            {
+                Bitmap bmp = new Bitmap(width, height);
+                using (Graphics gBmp = Graphics.FromImage(bmp))
+                {
+                    if (player.Direction == polozenie1)
+                    {
+                        int posX = 300;
+                        int posY = 800;
+                        // Rysowanie obrazu
+                        gBmp.DrawImage(key, new Rectangle(0, 0, width, height));
+                        imageRectangle = new Rectangle(posX, posY, width, height);
+                    }
+                    else if (player.Direction == polozenie2)
+                    {
+                        int posX = 1100;
+                        int posY = 720;
+                        gBmp.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+                        gBmp.RotateTransform(30);
+                        gBmp.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+                        // Rysowanie obrazu
+                        gBmp.DrawImage(key, new Rectangle(0, 0, width, height));
+                        imageRectangle = new Rectangle(posX, posY, width, height);
+                    }
+                }
+                g.DrawImage(bmp, imageRectangle);
+            }
+        }
+
+        private void RysujKluczNaPod³odzePoLewejSouthEast(Graphics g)
+        {
+            byte[] imageData = game.Labirynth[player.Coordinates.XCoordinate, player.Coordinates.YCoordinate].item.daneZdjecia;
+            int width = Width / 16;
+            int height = Height / 16;
+
+            using (Image key = Image.FromStream(new MemoryStream(imageData)))
+            {
+                Bitmap bmp = new Bitmap(width, height);
+                using (Graphics gBmp = Graphics.FromImage(bmp))
+                {
+                    if (player.Direction == EDirection.South)
+                    {
+                        int posX = 300;
+                        int posY = 800;
+                        // Rysowanie obrazu
+                        gBmp.DrawImage(key, new Rectangle(0, 0, width, height));
+                        imageRectangle = new Rectangle(posX, posY, width, height);
+                    }
+                    else if (player.Direction == EDirection.East)
+                    {
+                        int posX = 1100;
+                        int posY = 720;
+                        gBmp.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+                        gBmp.RotateTransform(30);
+                        gBmp.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+                        // Rysowanie obrazu
+                        gBmp.DrawImage(key, new Rectangle(0, 0, width, height));
+                        imageRectangle = new Rectangle(posX, posY, width, height);
+                    }
+                }
+                g.DrawImage(bmp, imageRectangle);
+            }
+        }
+
+
+
+
+
+        private void RysujApteczkeNaScianie(Graphics g, EDirection polozenie1, EDirection polozenie2)
+        {
+            byte[] imageData = game.Labirynth[player.Coordinates.XCoordinate, player.Coordinates.YCoordinate].item.daneZdjecia;
+            int width = Width / 12;
+            int height = Width / 12;
+
+            using (Image key = Image.FromStream(new MemoryStream(imageData)))
+            {
+                Bitmap bmp = new Bitmap(width, height);
+                using (Graphics gBmp = Graphics.FromImage(bmp))
+                {
+                    if (player.Direction == polozenie1)
+                    {
+                        int posX = 300;
+                        int posY = 200;
+                        //gBmp.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+                        // gBmp.ScaleTransform(0.1f, 0.1f);
+                        //gBmp.RotateTransform(-90);
+
+                        // gBmp.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+                        // Rysowanie obrazu
+                        Matrix matrix = new Matrix();
+                        matrix.Shear(0f, -0.4f);
+                        matrix.Scale(0.9f, 0.9f);
+                        gBmp.Transform = matrix;
+                        gBmp.DrawImage(key, new Rectangle(0, 25, width - 20, height));
+                        imageRectangle = new Rectangle(posX, posY, width, height);
+                    }
+                    else if (player.Direction == polozenie2)
+                    {
+                        int posX = 1300;
+                        int posY = 200;
+                        //gBmp.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+                        //gBmp.RotateTransform(30);
+                        //gBmp.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+                        // Rysowanie obrazu
+                        gBmp.ScaleTransform(0.9f, 0.9f);
+                        gBmp.DrawImage(key, new Rectangle(0, 0, width, height));
+                        imageRectangle = new Rectangle(posX, posY, width, height);
+                    }
+                }
+                g.DrawImage(bmp, imageRectangle);
+            }
+        }
+
+
+
         private async void Form1_Paint(object sender, PaintEventArgs e)
         {
             int x = player.Coordinates.XCoordinate;
@@ -436,7 +614,7 @@ namespace WinFormsApp1
             {
                 if (game.Labirynth[x, y].HasMonster)
                 {
-                    
+
                     hpBarMonster.Maximum = game.Labirynth[x, y].Monster.HPMax;
                     hpBarMonster.Value = game.Labirynth[x, y].Monster.HPCurrent;
                     hpBarPlayer.Maximum = player.HPMax;
@@ -516,6 +694,9 @@ namespace WinFormsApp1
             //drugie to jak odwrócony jest gracz
             //trzecie to koordynaty x oraz y pokoju
             //To jest chyba do zmiany bo to kosmiczne druciarstwo
+
+
+
             byte[] front = game.GetWall(EDirection.North, direction, x, y);
             byte[] left = game.GetWall(EDirection.West, direction.Previous(), x, y);
             byte[] right = game.GetWall(EDirection.East, direction.Next(), x, y);
@@ -539,6 +720,19 @@ namespace WinFormsApp1
                 g.DrawImage(compassPointerImage, new Point(Width - 200, Height - 200));
 
             }
+
+
+            if (game.Labirynth[x, y].item != null && game.Labirynth[x, y].item is ItemLock)
+            {
+                RysujKluczNaPod³odzePoLewej(g, game.Labirynth[x, y].item.polozenie1,game.Labirynth[x, y].item.polozenie2);
+            }
+            else if (game.Labirynth[x, y].item != null && game.Labirynth[x, y].item is ItemHealth)
+            {
+                RysujApteczkeNaScianie(g, game.Labirynth[x, y].item.polozenie1, game.Labirynth[x, y].item.polozenie2);
+            }
+
+
+
 
             if (game.Map.isMapShown == true) //Odczówam ból jak patrzê na to gówno....
             {
@@ -917,6 +1111,11 @@ namespace WinFormsApp1
         }
 
         private void panelBackground_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pictureBoxMonster_Click(object sender, EventArgs e)
         {
 
         }

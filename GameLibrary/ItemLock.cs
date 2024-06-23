@@ -8,8 +8,10 @@ namespace GameLibrary
 {
     public class ItemLock : Item
     {
-        public Coordinates CoordinatesToUnlock { get; set; }
-        public EDirection DirectionToUnlock { get; set; }
-        
+        public ItemLock(string name, byte[] daneZdjecia, EDirection polozenie1, EDirection polozenie2)
+            : base(name, daneZdjecia,polozenie1,polozenie2)
+        {
+            
+        }
     }
 }

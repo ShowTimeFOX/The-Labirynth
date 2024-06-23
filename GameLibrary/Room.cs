@@ -7,6 +7,7 @@
 
         public bool HasMonster { get; set; }
         public Monster Monster { get; set; }
+        public Item item { get; set; }
 
         public Room(Coordinates coordinates, Wall[] walls, bool hasMonster = false, Monster monster = null)
         {
@@ -16,6 +17,7 @@
             Walls = walls;
             HasMonster = hasMonster;
             Monster = monster;
+            item = null; //Na sztywno potem się dodaje itemy po stworzeniu
         }
     }
 }

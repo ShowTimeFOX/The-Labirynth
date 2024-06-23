@@ -4,6 +4,10 @@
     {
         Solid,
         Empty,
-        Door
+        Door,
+        GreenDoor,
+        RedDoor,
+        BlueDoor,
+        YellowDoor
     }
 }

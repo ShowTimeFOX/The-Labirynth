@@ -108,6 +108,7 @@
             pictureBoxMonster.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxMonster.TabIndex = 3;
             pictureBoxMonster.TabStop = false;
+            pictureBoxMonster.Click += pictureBoxMonster_Click;
             // 
             // timerBossMotion
             // 
