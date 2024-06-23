@@ -145,6 +145,11 @@ namespace WinFormsApp1
             panelOverlay.Controls.Add(labelGameOver);
             panelOverlay.Controls.Add(buttonReplay);
             panelOverlay.Controls.Add(buttonExit);
+            labelKomunikat.Text = $"STRENGTH: {player.Strength}";
+            labelHpPlayer.Text = $"{player.Name} HP {player.HPCurrent} / {player.HPMax}";
+
+            labelKomunikat.Visible = true;
+            
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -464,7 +469,14 @@ namespace WinFormsApp1
                 otherMusicPlayer.Init(otherMusicReader);
                 otherMusicPlayer.Volume = .7f;
                 otherMusicPlayer.Play();
-                player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
+                if(game.Labirynth[x, y].item is ItemDamage)
+                {
+                    Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    player.Strength += 30;
+                    labelKomunikat.Text = $"STRENGTH: {player.Strength}";
+                }
+                else player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
+
                 game.Labirynth[x, y].item = null;
                 Invalidate();
             }
@@ -487,7 +499,7 @@ namespace WinFormsApp1
 
         //MOJE METODY UPOŒLEDZONE DO RYSOWANIA ITEMÓW
 
-        private void RysujKluczNaPod³odzePoLewej(Graphics g,EDirection polozenie1, EDirection polozenie2)
+        private void RysujKluczNaPod³odzePoLewej(Graphics g, EDirection polozenie1, EDirection polozenie2)
         {
             byte[] imageData = game.Labirynth[player.Coordinates.XCoordinate, player.Coordinates.YCoordinate].item.daneZdjecia;
             int width = Width / 16;
@@ -619,7 +631,8 @@ namespace WinFormsApp1
             {
                 if (game.Labirynth[x, y].HasMonster)
                 {
-
+                    int itemHealthCount = player.Inventory.OfType<ItemHealth>().Count();
+                    buttonItem.Text = $"HEAL ({itemHealthCount})";
                     hpBarMonster.Maximum = game.Labirynth[x, y].Monster.HPMax;
                     hpBarMonster.Value = game.Labirynth[x, y].Monster.HPCurrent;
                     hpBarPlayer.Maximum = player.HPMax;
@@ -727,9 +740,9 @@ namespace WinFormsApp1
             }
 
 
-            if (game.Labirynth[x, y].item != null && game.Labirynth[x, y].item is ItemLock)
+            if (game.Labirynth[x, y].item != null && game.Labirynth[x, y].item is ItemLock || game.Labirynth[x, y].item is ItemDamage)
             {
-                RysujKluczNaPod³odzePoLewej(g, game.Labirynth[x, y].item.polozenie1,game.Labirynth[x, y].item.polozenie2);
+                RysujKluczNaPod³odzePoLewej(g, game.Labirynth[x, y].item.polozenie1, game.Labirynth[x, y].item.polozenie2);
             }
             else if (game.Labirynth[x, y].item != null && game.Labirynth[x, y].item is ItemHealth)
             {
@@ -828,8 +841,20 @@ namespace WinFormsApp1
 
         private void buttonItem_Click(object sender, EventArgs e)
         {
-            //otworzyc ekwipunek
-            //TODO
+            int itemHealthCount = player.Inventory.OfType<ItemHealth>().Count();
+            
+
+            if(itemHealthCount > 0 || player.HPCurrent == player.HPMax) 
+            {
+                if ((player.HPCurrent + 20) <= player.HPMax) player.HPCurrent += 20; //TUTAJ ODBYWA SIÊ LECZENIE
+                else player.HPCurrent = player.HPMax;
+                ItemHealth itemToRemove = player.Inventory.OfType<ItemHealth>().FirstOrDefault();
+                player.Inventory.Remove(itemToRemove);
+                hpBarPlayer.Value = player.HPCurrent;
+                itemHealthCount = player.Inventory.OfType<ItemHealth>().Count();
+                buttonItem.Text = $"HEAL ({itemHealthCount})";
+            }
+            else buttonItem.Enabled = false;
         }
 
         private async void buttonFight_Click(object sender, EventArgs e)
@@ -1121,6 +1146,11 @@ namespace WinFormsApp1
         }
 
         private void pictureBoxMonster_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBoxItem_Click(object sender, EventArgs e)
         {
 
         }
