@@ -434,6 +434,11 @@ namespace WinFormsApp1
                     Invalidate();
                 }
             }
+            if (e.KeyCode == Keys.X && game.Labirynth[x, y].HasMonster) //CHEAT
+            {
+                game.Labirynth[x, y].Monster.HPCurrent = 1;
+            }
+
             if (e.KeyCode == Keys.M)
             {
                 game.Map.isMapShown = !game.Map.isMapShown; //To po prostu jeœli nie ma mapy poka¿, jak jest to nie pokazuj
