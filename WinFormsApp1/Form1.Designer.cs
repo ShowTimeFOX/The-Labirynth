@@ -75,6 +75,7 @@
             label1.Size = new Size(56, 22);
             label1.TabIndex = 0;
             label1.Text = "label1";
+            label1.Visible = false;
             // 
             // label2
             // 
@@ -86,6 +87,7 @@
             label2.Size = new Size(56, 22);
             label2.TabIndex = 1;
             label2.Text = "label2";
+            label2.Visible = false;
             // 
             // label3
             // 
@@ -97,6 +99,7 @@
             label3.Size = new Size(42, 42);
             label3.TabIndex = 2;
             label3.Text = "N";
+            label3.Visible = false;
             // 
             // pictureBoxMonster
             // 
@@ -369,7 +372,7 @@
             labelKomunikat.BackColor = Color.Black;
             labelKomunikat.Font = new Font("Segoe UI", 30F, FontStyle.Regular, GraphicsUnit.Point);
             labelKomunikat.ForeColor = Color.White;
-            labelKomunikat.Location = new Point(0, 1000);
+            labelKomunikat.Location = new Point(0, 0);
             labelKomunikat.Name = "labelKomunikat";
             labelKomunikat.Size = new Size(130, 54);
             labelKomunikat.TabIndex = 16;

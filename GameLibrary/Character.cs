@@ -15,9 +15,12 @@
 
         protected Character(string name, string imagePath, int hPCurrent, int hPMax, int strength, int dexterity)
         {
+            
+            if(name.Length>= 30) throw new StringtooLongException("Twój stary za długi");
             Name = name;
             ImagePath = imagePath;
             HPCurrent = hPCurrent;
+            
             HPMax = hPMax;
             Strength = strength;
             Dexterity = dexterity;

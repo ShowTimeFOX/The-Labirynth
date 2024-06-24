@@ -33,6 +33,7 @@ namespace WinFormsApp1
         private Image compassPointerImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
         private Image originalCompassImage = Image.FromFile(Path.Combine("..", "..", "..", "..", "img/compass_pointer.png"));
         private Rectangle imageRectangle;
+        
 
         int xPosition = 50;
         int yPosition = 50;
@@ -67,8 +68,16 @@ namespace WinFormsApp1
 
         public Form1()
         {
-            player = new Player("Dzban", null, 100, 100, 30, 20);
+            try
+            {
+                player = new Player("Dzban", null, 150, 150, 30, 20);
+            }
+            catch (StringtooLongException e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             game = new Game(player);
+            game.GameEventHandler += () => Debug.WriteLine("Powa¿ny delegat oznaczajacy wyœwietlanie niebieskich drzwi");
             this.MouseClick += Form1_MouseClick;
             InitializeComponent();
         }
@@ -189,10 +198,12 @@ namespace WinFormsApp1
 
                     // Oblicz znormalizowan¹ odleg³oœæ
                     double normalizedDistance = (double)distanceFromCenter / maxDistance * 100;
-
                     // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
                     int damage2 = Math.Max(100 - (int)normalizedDistance, 0);
-                    damage = (player.Strength + damage2) / 10;
+                    // Wartoœæ obra¿eñ zale¿na od znormalizowanej odleg³oœci od œrodka
+                    // Wartoœæ obra¿eñ uwzglêdniaj¹ca wiêkszy wp³yw si³y gracza
+                    double strengthMultiplier = 1.5; // Mo¿esz dostosowaæ ten wspó³czynnik, aby si³a mia³a wiêksze znaczenie
+                    int damage = (int)((player.Strength * strengthMultiplier + damage2) / 3);
                     //Debug.WriteLine($"DAMAGE: {damage}");
 
                     labelDamage.Text = $"-{damage}";
@@ -214,7 +225,8 @@ namespace WinFormsApp1
                         otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/win.mp3"));
                         if (isFinalBoss)
                         {
-
+                            otherMusicPlayer.Stop();
+                            otherMusicPlayer.Dispose();
                             otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/barczak/stawiam ci 5.mp3"));
                             timerVoice.Stop();
                         }
@@ -237,6 +249,7 @@ namespace WinFormsApp1
                             //ZAKOÑCZENIE
                             //obs³uga zakoñczenia
                             //ciemne t³o
+                            labelKomunikat.Visible = false;
                             timerBossMotion.Stop();
                             panelBackground.Visible = true;
                             pictureBoxMonster.Image = null;
@@ -439,6 +452,11 @@ namespace WinFormsApp1
                     Invalidate();
                 }
             }
+            if (e.KeyCode == Keys.X && game.Labirynth[x, y].HasMonster) //CHEAT
+            {
+                game.Labirynth[x, y].Monster.HPCurrent = 1;
+            }
+
             if (e.KeyCode == Keys.M)
             {
                 game.Map.isMapShown = !game.Map.isMapShown; //To po prostu jeœli nie ma mapy poka¿, jak jest to nie pokazuj
@@ -464,20 +482,37 @@ namespace WinFormsApp1
             int y = player.Coordinates.YCoordinate;
             if (imageRectangle.Contains(clickPoint) && game.Labirynth[x, y].item != null)
             {
-                otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/key-get.mp3"));
-                otherMusicPlayer = new WaveOutEvent();
-                otherMusicPlayer.Init(otherMusicReader);
-                otherMusicPlayer.Volume = .7f;
-                otherMusicPlayer.Play();
-                if(game.Labirynth[x, y].item is ItemDamage)
+                if (game.Labirynth[x, y].item is ItemLock)
                 {
-                    Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/key-get.mp3"));
+                    otherMusicPlayer = new WaveOutEvent();
+                    otherMusicPlayer.Init(otherMusicReader);
+                    otherMusicPlayer.Volume = .7f;
+                    otherMusicPlayer.Play();
+                    player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
+                }
+                else if (game.Labirynth[x, y].item is ItemDamage)
+                {
+                    otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/item-equip.mp3"));
+                    otherMusicPlayer = new WaveOutEvent();
+                    otherMusicPlayer.Init(otherMusicReader);
+                    otherMusicPlayer.Volume = .7f;
+                    otherMusicPlayer.Play();
                     player.Strength += 30;
                     labelKomunikat.Text = $"STRENGTH: {player.Strength}";
                 }
-                else player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
+                else if (game.Labirynth[x, y].item is ItemHealth)
+                {
+                    otherMusicReader = new AudioFileReader(Path.Combine("..", "..", "..", "..", "sounds/item-equip.mp3"));
+                    otherMusicPlayer = new WaveOutEvent();
+                    otherMusicPlayer.Init(otherMusicReader);
+                    otherMusicPlayer.Volume = .7f;
+                    otherMusicPlayer.Play();
+                    player.Inventory.Add(game.Labirynth[x, y].item); // Dodanie itemu do ekwipunku
+                }
 
-                game.Labirynth[x, y].item = null;
+
+                    game.Labirynth[x, y].item = null;
                 Invalidate();
             }
         }
@@ -659,7 +694,7 @@ namespace WinFormsApp1
                     }
                     else
                     {
-                        pictureBoxMonster.Size = new Size(600, 400);
+                        pictureBoxMonster.Size = new Size(700, 500);
                         pictureBoxMonster.SizeMode = PictureBoxSizeMode.Zoom;
                     }
                     //backgroundMusicPlayer.Stop();
@@ -846,7 +881,7 @@ namespace WinFormsApp1
 
             if(itemHealthCount > 0 || player.HPCurrent == player.HPMax) 
             {
-                if ((player.HPCurrent + 20) <= player.HPMax) player.HPCurrent += 20; //TUTAJ ODBYWA SIÊ LECZENIE
+                if ((player.HPCurrent + 40) <= player.HPMax) player.HPCurrent += 40; //TUTAJ ODBYWA SIÊ LECZENIE
                 else player.HPCurrent = player.HPMax;
                 ItemHealth itemToRemove = player.Inventory.OfType<ItemHealth>().FirstOrDefault();
                 player.Inventory.Remove(itemToRemove);
@@ -1025,7 +1060,7 @@ namespace WinFormsApp1
             musicPlayer.SoundLocation = Path.Combine("..", "..", "..", "..", "sounds/main.wav");
             musicPlayer.PlayLooping();
 
-            player = new Player("player", null, 100, 100, 30, 20);
+            player = new Player("player", null, 150, 150, 30, 20);
             game = new Game(player);
             panelOverlay.Visible = false;
             panelBackground.Visible = false;
@@ -1034,6 +1069,7 @@ namespace WinFormsApp1
             buttonFight.BackColor = Color.White;
             buttonItem.BackColor = Color.White;
             isFinalBoss = false;
+            labelKomunikat.Text = $"STRENGTH: {player.Strength}";
             Invalidate();
         }
 
